@@ -4,12 +4,11 @@ public class PlayerDetectionHit : MonoBehaviour
 {
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        // Verificar si el enemigo está paralizado antes de hacer respawn
-        if (collision.gameObject.CompareTag("DeadZone") ||
-            (collision.gameObject.CompareTag("Enemy") && !IsEnemyParalyzed(collision.gameObject)))
-        {
-            SpawnPlayer();
-        }
+  if (collision.gameObject.CompareTag("DeadZone") ||
+        (collision.gameObject.CompareTag("Enemy") && !IsEnemyParalyzed(collision.gameObject)))
+    {
+        SpawnPlayer();
+    }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

@@ -1,41 +1,100 @@
 using UnityEngine;
+using System.Collections;
 
-public class EnemyShooter : MonoBehaviour
+public class EnemyShooter : MonoBehaviour, IParalyzable
 {
+    [Header("Disparo")]
     [SerializeField] private GameObject bullet;
-    [SerializeField] private float timeToShoot;
+    [SerializeField] private float timeToShoot = 2f;
+
+    [Header("Parálisis")]
+    [SerializeField] private float paralysisDuration = 5f;
+    [SerializeField] private float paralysisCooldown = 5f; // ⏳ tiempo de inmunidad tras recuperar el control
 
     private Transform bulletContainerTransform;
     private float timer;
+    private SpriteRenderer sprite;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    private bool isImmune = false; // evita spam de parálisis
+    public bool isParalyzed { get; private set; } = false;
+
     private void Awake()
     {
-        timer = 0;
+        timer = 0f;
+        sprite = GetComponent<SpriteRenderer>();
     }
 
     private void Start()
     {
         GameObject bulletContainer = GameObject.FindGameObjectWithTag("BulletContainer");
-        bulletContainerTransform = bulletContainer.transform;
+        if (bulletContainer != null)
+            bulletContainerTransform = bulletContainer.transform;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        // Sumamos los segundos.
+        if (isParalyzed) return; // paralizado → no dispara
+
         timer += Time.deltaTime;
         if (timer >= timeToShoot)
         {
-            // Creamos el objeto
-            GameObject bulletObject = Instantiate(bullet, bulletContainerTransform);
-            // Colocamos la posici�n inicial relativa al enemigo
-            bulletObject.transform.localPosition = transform.localPosition;
-            // Llamamos al Start del BulletScript para activar la posici�n de la bala
-            BulletScript bulletScript = bulletObject.GetComponent<BulletScript>();
-            bulletScript.StartBullet();
-            // Reiniciamos el tiempo 
+            Shoot();
             timer = 0f;
         }
+    }
+
+    private void Shoot()
+    {
+        if (bullet == null || bulletContainerTransform == null) return;
+
+        GameObject bulletObject = Instantiate(bullet, bulletContainerTransform);
+        bulletObject.transform.localPosition = transform.localPosition;
+
+        BulletScript bulletScript = bulletObject.GetComponent<BulletScript>();
+        bulletScript.StartBullet();
+    }
+
+    // --- Parálisis con cooldown e indicadores visuales ---
+    public void Paralyze()
+    {
+        if (isParalyzed || isImmune) return; // ⛔ no se puede stunear si ya lo está o es inmune
+
+        Debug.Log($"EnemyShooter paralizado durante {paralysisDuration} segundos");
+        StartCoroutine(ParalysisRoutine());
+    }
+
+    private IEnumerator ParalysisRoutine()
+    {
+        isParalyzed = true;
+
+        if (sprite != null)
+            sprite.color = Color.gray;
+
+        yield return new WaitForSeconds(paralysisDuration);
+
+        // Termina la parálisis
+        isParalyzed = false;
+
+        // Comienza inmunidad
+        StartCoroutine(ParalysisCooldownRoutine());
+    }
+
+    private IEnumerator ParalysisCooldownRoutine()
+    {
+        isImmune = true;
+
+        // Color amarillo → indica inmunidad
+        if (sprite != null)
+            sprite.color = Color.yellow;
+
+        Debug.Log($"EnemyShooter inmune a la parálisis durante {paralysisCooldown} segundos");
+
+        yield return new WaitForSeconds(paralysisCooldown);
+
+        isImmune = false;
+
+        // Regresa al color normal
+        if (sprite != null)
+            sprite.color = Color.white;
     }
 }
