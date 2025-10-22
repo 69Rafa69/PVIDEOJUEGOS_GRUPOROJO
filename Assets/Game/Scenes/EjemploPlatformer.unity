@@ -133,7 +133,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5138070643798548022, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       propertyPath: m_IsTrigger
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6037287561672958819, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       propertyPath: m_FlipX
@@ -154,7 +154,15 @@ PrefabInstance:
     - target: {fileID: 6716424638782711073, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       propertyPath: groundCheck
       value: 
-      objectReference: {fileID: 504088031}
+      objectReference: {fileID: 2020685229}
+    - target: {fileID: 6716424638782711073, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+      propertyPath: capaSuelo.m_Bits
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6716424638782711073, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+      propertyPath: controladorSuelo
+      value: 
+      objectReference: {fileID: 1332903350}
     - target: {fileID: 6716424638782711073, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       propertyPath: paralysisDuration
       value: 5
@@ -217,7 +225,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 6938333751826377876, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1332903350}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 6790276595379479915, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       insertIndex: -1
@@ -240,7 +251,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5138070643798548022, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       propertyPath: m_IsTrigger
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6037287561672958819, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       propertyPath: m_FlipX
@@ -261,7 +272,15 @@ PrefabInstance:
     - target: {fileID: 6716424638782711073, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       propertyPath: groundCheck
       value: 
-      objectReference: {fileID: 504088031}
+      objectReference: {fileID: 2020685229}
+    - target: {fileID: 6716424638782711073, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+      propertyPath: capaSuelo.m_Bits
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6716424638782711073, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+      propertyPath: controladorSuelo
+      value: 
+      objectReference: {fileID: 427776605}
     - target: {fileID: 6716424638782711073, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       propertyPath: paralysisDuration
       value: 5
@@ -324,7 +343,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 6938333751826377876, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 427776605}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 6790276595379479915, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       insertIndex: -1
@@ -333,6 +355,37 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1372244717}
   m_SourcePrefab: {fileID: 100100000, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+--- !u!1 &115606566
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 115606567}
+  m_Layer: 0
+  m_Name: Controladorsuelo
+  m_TagString: Untagged
+  m_Icon: {fileID: 7174288486110832750, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &115606567
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 115606566}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.843, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 881259083}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &151503814
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -516,7 +569,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5138070643798548022, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       propertyPath: m_IsTrigger
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6037287561672958819, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       propertyPath: m_FlipX
@@ -537,7 +590,15 @@ PrefabInstance:
     - target: {fileID: 6716424638782711073, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       propertyPath: groundCheck
       value: 
-      objectReference: {fileID: 504088031}
+      objectReference: {fileID: 2020685229}
+    - target: {fileID: 6716424638782711073, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+      propertyPath: capaSuelo.m_Bits
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6716424638782711073, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+      propertyPath: controladorSuelo
+      value: 
+      objectReference: {fileID: 963203641}
     - target: {fileID: 6716424638782711073, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       propertyPath: paralysisDuration
       value: 5
@@ -600,7 +661,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 6938333751826377876, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 963203641}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 6790276595379479915, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       insertIndex: -1
@@ -701,7 +765,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5138070643798548022, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       propertyPath: m_IsTrigger
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6037287561672958819, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       propertyPath: m_FlipX
@@ -722,7 +786,15 @@ PrefabInstance:
     - target: {fileID: 6716424638782711073, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       propertyPath: groundCheck
       value: 
-      objectReference: {fileID: 504088031}
+      objectReference: {fileID: 2020685229}
+    - target: {fileID: 6716424638782711073, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+      propertyPath: capaSuelo.m_Bits
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6716424638782711073, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+      propertyPath: controladorSuelo
+      value: 
+      objectReference: {fileID: 890944757}
     - target: {fileID: 6716424638782711073, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       propertyPath: paralysisDuration
       value: 5
@@ -785,7 +857,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 6938333751826377876, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 890944757}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 6790276595379479915, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       insertIndex: -1
@@ -794,6 +869,37 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1467662637}
   m_SourcePrefab: {fileID: 100100000, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+--- !u!1 &427776604
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 427776605}
+  m_Layer: 0
+  m_Name: Controladorsuelo
+  m_TagString: Untagged
+  m_Icon: {fileID: 7174288486110832750, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &427776605
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 427776604}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.852, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1372244722}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &504088030
 GameObject:
   m_ObjectHideFlags: 0
@@ -850,8 +956,6 @@ TilemapRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -873,7 +977,6 @@ TilemapRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -1258713579
   m_SortingLayer: 3
   m_SortingOrder: 0
@@ -41356,6 +41459,7 @@ MonoBehaviour:
   m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
+  m_Version: 2
   m_TaaSettings:
     m_Quality: 3
     m_FrameInfluence: 0.1
@@ -41363,7 +41467,6 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
-  m_Version: 2
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
@@ -41532,9 +41635,13 @@ PrefabInstance:
       propertyPath: m_BodyType
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4011858259958578169, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+      propertyPath: m_GravityScale
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5138070643798548022, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       propertyPath: m_IsTrigger
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6037287561672958819, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       propertyPath: m_FlipX
@@ -41557,6 +41664,22 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 504088031}
     - target: {fileID: 6716424638782711073, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+      propertyPath: groundRadius
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6716424638782711073, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+      propertyPath: groundDistance
+      value: 1.92
+      objectReference: {fileID: 0}
+    - target: {fileID: 6716424638782711073, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+      propertyPath: capaSuelo.m_Bits
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6716424638782711073, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+      propertyPath: controladorSuelo
+      value: 
+      objectReference: {fileID: 1321244408}
+    - target: {fileID: 6716424638782711073, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       propertyPath: paralysisDuration
       value: 5
       objectReference: {fileID: 0}
@@ -41578,11 +41701,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6938333751826377876, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 4.88
+      value: 4.889
       objectReference: {fileID: 0}
     - target: {fileID: 6938333751826377876, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 21.17
+      value: 21.656
       objectReference: {fileID: 0}
     - target: {fileID: 6938333751826377876, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       propertyPath: m_LocalPosition.z
@@ -41618,7 +41741,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 6938333751826377876, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2020685229}
+    - targetCorrespondingSourceObject: {fileID: 6938333751826377876, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1321244408}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 6790276595379479915, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       insertIndex: -1
@@ -41926,8 +42055,6 @@ SpriteRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -41949,7 +42076,6 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -114742977
   m_SortingLayer: 4
   m_SortingOrder: 0
@@ -42142,13 +42268,18 @@ CapsuleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Size: {x: 1, y: 1.6}
   m_Direction: 0
+--- !u!4 &857510732 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6938333751826377876, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+  m_PrefabInstance: {fileID: 961093314}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &872499011
 GameObject:
   m_ObjectHideFlags: 0
@@ -42274,13 +42405,18 @@ CapsuleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Size: {x: 1, y: 1.6}
   m_Direction: 0
+--- !u!4 &881259083 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6938333751826377876, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+  m_PrefabInstance: {fileID: 1723398083}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &887639854
 GameObject:
   m_ObjectHideFlags: 0
@@ -42359,6 +42495,37 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 15, y: 2}
   m_EdgeRadius: 0
+--- !u!1 &890944756
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 890944757}
+  m_Layer: 0
+  m_Name: Controladorsuelo
+  m_TagString: Untagged
+  m_Icon: {fileID: 7174288486110832750, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &890944757
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 890944756}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.843, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1467662642}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &896541707
 GameObject:
   m_ObjectHideFlags: 0
@@ -42412,8 +42579,6 @@ TilemapRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -42435,7 +42600,6 @@ TilemapRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 1390904737
   m_SortingLayer: 1
   m_SortingOrder: 0
@@ -47764,13 +47928,18 @@ CapsuleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Size: {x: 1, y: 1.6}
   m_Direction: 0
+--- !u!4 &905213572 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6938333751826377876, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+  m_PrefabInstance: {fileID: 1089715895}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &918796231
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -47951,7 +48120,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5138070643798548022, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       propertyPath: m_IsTrigger
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6037287561672958819, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       propertyPath: m_FlipX
@@ -47972,7 +48141,15 @@ PrefabInstance:
     - target: {fileID: 6716424638782711073, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       propertyPath: groundCheck
       value: 
-      objectReference: {fileID: 504088031}
+      objectReference: {fileID: 2020685229}
+    - target: {fileID: 6716424638782711073, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+      propertyPath: capaSuelo.m_Bits
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6716424638782711073, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+      propertyPath: controladorSuelo
+      value: 
+      objectReference: {fileID: 1705647990}
     - target: {fileID: 6716424638782711073, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       propertyPath: paralysisDuration
       value: 5
@@ -48035,7 +48212,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 6938333751826377876, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1705647990}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 6790276595379479915, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       insertIndex: -1
@@ -48044,6 +48224,37 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 857510727}
   m_SourcePrefab: {fileID: 100100000, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+--- !u!1 &963203640
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 963203641}
+  m_Layer: 0
+  m_Name: Controladorsuelo
+  m_TagString: Untagged
+  m_Icon: {fileID: 7174288486110832750, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &963203641
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963203640}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.861, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1359098038}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1018330077
 GameObject:
   m_ObjectHideFlags: 0
@@ -48089,7 +48300,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5138070643798548022, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       propertyPath: m_IsTrigger
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6037287561672958819, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       propertyPath: m_FlipX
@@ -48110,7 +48321,15 @@ PrefabInstance:
     - target: {fileID: 6716424638782711073, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       propertyPath: groundCheck
       value: 
-      objectReference: {fileID: 504088031}
+      objectReference: {fileID: 2020685229}
+    - target: {fileID: 6716424638782711073, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+      propertyPath: capaSuelo.m_Bits
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6716424638782711073, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+      propertyPath: controladorSuelo
+      value: 
+      objectReference: {fileID: 1727657235}
     - target: {fileID: 6716424638782711073, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       propertyPath: paralysisDuration
       value: 5
@@ -48173,7 +48392,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 6938333751826377876, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1727657235}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 6790276595379479915, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       insertIndex: -1
@@ -48428,6 +48650,68 @@ Transform:
   m_Children: []
   m_Father: {fileID: 796435383}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1321244407
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1321244408}
+  m_Layer: 0
+  m_Name: Controladorsuelo
+  m_TagString: Untagged
+  m_Icon: {fileID: 7174288486110832750, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1321244408
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1321244407}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.901, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1974703896}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1332903349
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1332903350}
+  m_Layer: 0
+  m_Name: Controladorsuelo
+  m_TagString: Untagged
+  m_Icon: {fileID: 7174288486110832750, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1332903350
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1332903349}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.87, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1662008731}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1341291157
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -48532,13 +48816,18 @@ CapsuleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Size: {x: 1, y: 1.6}
   m_Direction: 0
+--- !u!4 &1359098038 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6938333751826377876, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+  m_PrefabInstance: {fileID: 255916763}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1372244710 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6790276595379479915, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
@@ -48586,13 +48875,18 @@ CapsuleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Size: {x: 1, y: 1.6}
   m_Direction: 0
+--- !u!4 &1372244722 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6938333751826377876, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+  m_PrefabInstance: {fileID: 28143064}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1374772159
 GameObject:
   m_ObjectHideFlags: 0
@@ -48717,13 +49011,18 @@ CapsuleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Size: {x: 1, y: 1.6}
   m_Direction: 0
+--- !u!4 &1467662642 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6938333751826377876, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+  m_PrefabInstance: {fileID: 355648297}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1515999430
 GameObject:
   m_ObjectHideFlags: 0
@@ -48849,13 +49148,18 @@ CapsuleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Size: {x: 1, y: 1.6}
   m_Direction: 0
+--- !u!4 &1662008731 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6938333751826377876, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+  m_PrefabInstance: {fileID: 1660750}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1674740255
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -48917,6 +49221,37 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f5db3319221c3ca4ab8103ebed6514de, type: 3}
+--- !u!1 &1705647989
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1705647990}
+  m_Layer: 0
+  m_Name: Contrladorsuelo
+  m_TagString: Untagged
+  m_Icon: {fileID: 7174288486110832750, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1705647990
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1705647989}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.834, y: 0.009, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 857510732}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1723398083
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -48931,7 +49266,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5138070643798548022, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       propertyPath: m_IsTrigger
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6037287561672958819, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       propertyPath: m_FlipX
@@ -48952,7 +49287,15 @@ PrefabInstance:
     - target: {fileID: 6716424638782711073, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       propertyPath: groundCheck
       value: 
-      objectReference: {fileID: 504088031}
+      objectReference: {fileID: 2020685229}
+    - target: {fileID: 6716424638782711073, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+      propertyPath: capaSuelo.m_Bits
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6716424638782711073, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+      propertyPath: controladorSuelo
+      value: 
+      objectReference: {fileID: 115606567}
     - target: {fileID: 6716424638782711073, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       propertyPath: paralysisDuration
       value: 5
@@ -49015,7 +49358,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 6938333751826377876, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 115606567}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 6790276595379479915, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
       insertIndex: -1
@@ -49024,6 +49370,37 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 881259078}
   m_SourcePrefab: {fileID: 100100000, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+--- !u!1 &1727657234
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1727657235}
+  m_Layer: 0
+  m_Name: Controladorsuelo
+  m_TagString: Untagged
+  m_Icon: {fileID: 7174288486110832750, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1727657235
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1727657234}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.879, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 905213572}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1905352594
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -49128,13 +49505,18 @@ CapsuleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Size: {x: 1, y: 1.6}
   m_Direction: 0
+--- !u!4 &1974703896 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6938333751826377876, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
+  m_PrefabInstance: {fileID: 560101669}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2000131187
 GameObject:
   m_ObjectHideFlags: 0
@@ -49213,6 +49595,37 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 10, y: 2}
   m_EdgeRadius: 0
+--- !u!1 &2020685228
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2020685229}
+  m_Layer: 0
+  m_Name: Groundcheck
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2020685229
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2020685228}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1974703896}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2110076883
 GameObject:
   m_ObjectHideFlags: 0
@@ -49266,8 +49679,6 @@ TilemapRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -49289,7 +49700,6 @@ TilemapRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -1258713579
   m_SortingLayer: 3
   m_SortingOrder: -1

@@ -4,59 +4,58 @@ using System.Collections;
 public class Goomba : MonoBehaviour, IParalyzable
 {
     [Header("Movimiento")]
-    [SerializeField] private float speedX;
-    [SerializeField] private float limitRight;
-    [SerializeField] private float limitLeft;
+    [SerializeField] private float speedX = 3f;
+    [SerializeField] private Transform controladorSuelo;
+    [SerializeField] private float distanciaSuelo = 1.0f;
+    [SerializeField] private bool moviendoDerecha = true;
+    [SerializeField] private LayerMask capaSuelo;
 
     [Header("Parálisis")]
-    [SerializeField] private float paralysisDuration = 15f;
-    [SerializeField] private float paralysisCooldown = 5f; // ⏳ tiempo de inmunidad
+    [SerializeField] private float paralysisDuration = 5f;
+    [SerializeField] private float paralysisCooldown = 5f;
 
-    private Vector2 limits;
-    private int direction;
     private Rigidbody2D body;
     private SpriteRenderer sprite;
-    private Vector3 originalPosition;
-
-    public bool isParalyzed { get; private set; } = false;
+    public bool isParalyzed { get; private set; } = false; // 🔹 cumple con la interfaz
     private bool isImmune = false;
 
     private void Awake()
     {
-        Vector3 pos = transform.localPosition;
-        originalPosition = pos;
-        limits = new Vector2(pos.x - limitLeft, pos.x + limitRight);
-
         body = GetComponent<Rigidbody2D>();
         sprite = GetComponent<SpriteRenderer>();
-        direction = 1; // empieza moviéndose a la derecha
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
-        // solo se mueve si no está paralizado
-        if (!isParalyzed)
+        if (isParalyzed)
         {
-            if (direction != 0)
-                sprite.flipX = direction < 0;
-
-            Vector3 pos = transform.localPosition;
-            if (pos.x <= limits.x) direction = 1;
-            if (pos.x >= limits.y) direction = -1;
-
-            body.linearVelocityX = direction * speedX;
+            body.linearVelocity = new Vector2(0, body.linearVelocity.y);
+            return;
         }
-        else
+
+        // Movimiento horizontal
+        float dir = moviendoDerecha ? 1 : -1;
+        body.linearVelocity = new Vector2(dir * speedX, body.linearVelocity.y);
+
+        // Detección de suelo con Raycast
+        RaycastHit2D infoSuelo = Physics2D.Raycast(controladorSuelo.position, Vector2.down, distanciaSuelo, capaSuelo);
+
+        // Si no hay suelo, gira
+        if (infoSuelo.collider == null)
         {
-            body.linearVelocity = Vector2.zero;
+            Girar();
         }
+    }
+
+    private void Girar()
+    {
+        moviendoDerecha = !moviendoDerecha;
+        transform.eulerAngles = new Vector3(0, moviendoDerecha ? 0 : 180, 0);
     }
 
     public void Paralyze()
     {
-        if (isParalyzed || isImmune) return; // ⛔ evita stun spam
-
-        Debug.Log($"Goomba paralizado durante {paralysisDuration} segundos");
+        if (isParalyzed || isImmune) return;
         StartCoroutine(ParalysisRoutine());
     }
 
@@ -64,28 +63,25 @@ public class Goomba : MonoBehaviour, IParalyzable
     {
         isParalyzed = true;
 
-        // Cambiar color a gris
         if (sprite != null)
             sprite.color = Color.gray;
 
-        // Aplicar físicas para que caiga si corresponde
         body.bodyType = RigidbodyType2D.Dynamic;
-        body.gravityScale = 2f;
+        body.gravityScale = 4f;
         body.constraints = RigidbodyConstraints2D.FreezeRotation;
         body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
 
         yield return new WaitForSeconds(paralysisDuration);
 
-        // Restaurar estado
-        isParalyzed = false;
+        // Espera a tocar suelo
+        yield return new WaitUntil(() => body.IsTouchingLayers(capaSuelo));
 
-        // Quitar físicas y restaurar movimiento
+        // Restaurar movimiento
+        isParalyzed = false;
         body.bodyType = RigidbodyType2D.Kinematic;
         body.gravityScale = 0f;
         body.collisionDetectionMode = CollisionDetectionMode2D.Discrete;
-        direction = 1;
 
-        // Iniciar cooldown de inmunidad
         StartCoroutine(ParalysisCooldownRoutine());
     }
 
@@ -93,28 +89,24 @@ public class Goomba : MonoBehaviour, IParalyzable
     {
         isImmune = true;
 
-        // Color amarillo → inmunidad
         if (sprite != null)
             sprite.color = Color.yellow;
-
-        Debug.Log($"Goomba inmune a la parálisis durante {paralysisCooldown} segundos");
 
         yield return new WaitForSeconds(paralysisCooldown);
 
         isImmune = false;
 
-        // Regresar al color normal
         if (sprite != null)
             sprite.color = Color.white;
     }
 
     private void OnDrawGizmos()
     {
-        Vector3 pos = originalPosition != Vector3.zero ? originalPosition : transform.localPosition;
-        Vector3 posLeft = new Vector3(pos.x - limitLeft, pos.y, pos.z);
-        Vector3 posRight = new Vector3(pos.x + limitRight, pos.y, pos.z);
-        Gizmos.DrawSphere(posLeft, 0.5f);
-        Gizmos.DrawSphere(posRight, 0.5f);
+        if (controladorSuelo != null)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine(controladorSuelo.position, controladorSuelo.position + Vector3.down * distanciaSuelo);
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -123,9 +115,7 @@ public class Goomba : MonoBehaviour, IParalyzable
         {
             PlayerDetectionHit playerHit = collision.gameObject.GetComponent<PlayerDetectionHit>();
             if (playerHit != null)
-            {
                 playerHit.SendMessage("SpawnPlayer");
-            }
         }
     }
 }
