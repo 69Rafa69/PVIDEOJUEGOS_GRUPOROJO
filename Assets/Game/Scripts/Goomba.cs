@@ -15,14 +15,15 @@ public class Goomba : MonoBehaviour, IParalyzable
     [SerializeField] private float paralysisCooldown = 5f;
 
     private Rigidbody2D body;
-    private SpriteRenderer sprite;
-    public bool isParalyzed { get; private set; } = false; // 🔹 cumple con la interfaz
+    private Animator animator;
+
+    public bool isParalyzed { get; private set; } = false;
     private bool isImmune = false;
 
     private void Awake()
     {
         body = GetComponent<Rigidbody2D>();
-        sprite = GetComponent<SpriteRenderer>();
+        animator = GetComponent<Animator>();
     }
 
     private void FixedUpdate()
@@ -33,14 +34,10 @@ public class Goomba : MonoBehaviour, IParalyzable
             return;
         }
 
-        // Movimiento horizontal
         float dir = moviendoDerecha ? 1 : -1;
         body.linearVelocity = new Vector2(dir * speedX, body.linearVelocity.y);
 
-        // Detección de suelo con Raycast
         RaycastHit2D infoSuelo = Physics2D.Raycast(controladorSuelo.position, Vector2.down, distanciaSuelo, capaSuelo);
-
-        // Si no hay suelo, gira
         if (infoSuelo.collider == null)
         {
             Girar();
@@ -63,8 +60,8 @@ public class Goomba : MonoBehaviour, IParalyzable
     {
         isParalyzed = true;
 
-        if (sprite != null)
-            sprite.color = Color.gray;
+        // ⚡ Activar animación de parálisis
+        animator.SetBool("isParalyzed", true);
 
         body.bodyType = RigidbodyType2D.Dynamic;
         body.gravityScale = 4f;
@@ -73,11 +70,23 @@ public class Goomba : MonoBehaviour, IParalyzable
 
         yield return new WaitForSeconds(paralysisDuration);
 
-        // Espera a tocar suelo
+        // Esperar a que toque suelo
         yield return new WaitUntil(() => body.IsTouchingLayers(capaSuelo));
 
-        // Restaurar movimiento
+        // 🧠 Desactivar parálisis
         isParalyzed = false;
+        animator.SetBool("isParalyzed", false);
+
+        // ✨ Activar trigger para relive
+        animator.SetTrigger("revive");
+
+        // Detener movimiento durante relive
+        body.linearVelocity = Vector2.zero;
+
+        // Esperar la duración de la animación (ajústala según tu clip)
+        yield return new WaitForSeconds(1.5f);
+
+        // Restaurar movimiento normal
         body.bodyType = RigidbodyType2D.Kinematic;
         body.gravityScale = 0f;
         body.collisionDetectionMode = CollisionDetectionMode2D.Discrete;
@@ -88,16 +97,8 @@ public class Goomba : MonoBehaviour, IParalyzable
     private IEnumerator ParalysisCooldownRoutine()
     {
         isImmune = true;
-
-        if (sprite != null)
-            sprite.color = Color.yellow;
-
         yield return new WaitForSeconds(paralysisCooldown);
-
         isImmune = false;
-
-        if (sprite != null)
-            sprite.color = Color.white;
     }
 
     private void OnDrawGizmos()

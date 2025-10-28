@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5138070643798548022}
   - component: {fileID: 4011858259958578169}
   - component: {fileID: 6716424638782711073}
+  - component: {fileID: 4616250936075803951}
   m_Layer: 0
   m_Name: Goomba
   m_TagString: Enemy
@@ -167,6 +168,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speedX: 5
-  limitRight: 5
-  limitLeft: 5
+  controladorSuelo: {fileID: 0}
+  distanciaSuelo: 1
+  moviendoDerecha: 1
+  capaSuelo:
+    serializedVersion: 2
+    m_Bits: 0
   paralysisDuration: 10
+  paralysisCooldown: 5
+--- !u!95 &4616250936075803951
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6790276595379479915}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: e3c366f00c6fc774b83722d780005e25, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
