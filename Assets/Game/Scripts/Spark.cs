@@ -2,7 +2,17 @@ using UnityEngine;
 
 public class Spark : MonoBehaviour
 {
+    [Header("Duraciï¿½n")]
     [SerializeField] private float duration = 10f;
+
+    [Header("Movimiento")]
+    [SerializeField] private float speed = 5f;
+    [SerializeField] private bool moveRight = true;
+
+    [Header("Animaciï¿½n")]
+    [SerializeField] private Animator animator; // ? nuevo campo opcional para reproducir animaciï¿½n
+
+    private Rigidbody2D rb;
 
     // Si colisiona con un enemigo
     void OnTriggerEnter2D(Collider2D other) // Cambiado a OnTriggerEnter2D
@@ -18,6 +28,36 @@ public class Spark : MonoBehaviour
     // Si no colisiona
     void Start()
     {
-        Destroy(gameObject, duration); // Destruye después de la duración especificada
+        // ?? Configuraciï¿½n de Rigidbody y movimiento inicial
+        rb = GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            float direction = moveRight ? 1f : -1f;
+            rb.linearVelocity = new Vector2(speed * direction, 0f);
+
+            // ?? Ajuste visual segï¿½n direcciï¿½n
+            if (!moveRight)
+                transform.localScale = new Vector3(-1, 1, 1);
+        }
+
+        // ?? Si hay animador, iniciar animaciï¿½n del Spark
+        if (animator != null)
+            animator.Play("Spark_Anim", 0, 0f);
+
+        // ?? Destruye despuï¿½s de la duraciï¿½n especificada
+        Destroy(gameObject, duration);
+    }
+
+    // ? Nuevo mï¿½todo pï¿½blico para definir direcciï¿½n desde PlayerShoot
+    public void SetDirection(bool right)
+    {
+        moveRight = right;
+        if (rb != null)
+        {
+            float direction = moveRight ? 1f : -1f;
+            rb.linearVelocity = new Vector2(speed * direction, 0f);
+            if (!moveRight)
+                transform.localScale = new Vector3(-1, 1, 1);
+        }
     }
 }

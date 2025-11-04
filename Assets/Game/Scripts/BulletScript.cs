@@ -2,22 +2,18 @@ using UnityEngine;
 
 public class BulletScript : MonoBehaviour
 {
-    // Valores cambiables en el editor
     [SerializeField] private float speedX;
     [SerializeField] private float speedY;
     [SerializeField] private float maxDistance;
 
     private Rigidbody2D body;
     private Vector2 initialPosition;
+    private bool moveRight = true; // ? agregado para controlar direcciï¿½n
 
     private void Awake()
     {
         body = GetComponent<Rigidbody2D>();
-        // La bala se mueve a esa velocidad y no cambiaría porque está configurada como
-        // tipo kinemática
-        body.linearVelocityX = speedX;
-        body.linearVelocityY = speedY;
-
+        body.linearVelocity = new Vector2(speedX, speedY);
         Debug.Log("La bala se despierta...");
     }
 
@@ -26,13 +22,28 @@ public class BulletScript : MonoBehaviour
         initialPosition = transform.localPosition;
     }
 
-    // Update is called once per frame
-    void Update()
+    // ? NUEVO Mï¿½TODO: permite cambiar la direcciï¿½n de disparo (derecha o izquierda)
+    public void SetDirection(bool right)
+    {
+        moveRight = right;
+
+        float dir = moveRight ? 1f : -1f;
+
+        if (body != null)
+        {
+            // Invierte la direcciï¿½n en X segï¿½n el flip del enemigo
+            body.linearVelocity = new Vector2(Mathf.Abs(speedX) * dir, speedY);
+        }
+
+        // Invierte el sprite visualmente si va a la izquierda
+        transform.localScale = new Vector3(moveRight ? 1 : -1, 1, 1);
+    }
+
+    private void Update()
     {
         float distance = Vector2.Distance(transform.localPosition, initialPosition);
         if (distance >= maxDistance)
         {
-            // Destruimos el objeto
             Destroy(gameObject);
             Debug.Log("Destruida la bala...");
         }

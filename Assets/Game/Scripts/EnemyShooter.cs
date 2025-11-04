@@ -50,8 +50,17 @@ public class EnemyShooter : MonoBehaviour, IParalyzable
         GameObject bulletObject = Instantiate(bullet, bulletContainerTransform);
         bulletObject.transform.localPosition = transform.localPosition;
 
+        //  Conserva tu llamada original
         BulletScript bulletScript = bulletObject.GetComponent<BulletScript>();
-        bulletScript.StartBullet();
+        if (bulletScript != null)
+        {
+            bulletScript.StartBullet();
+
+            //  NUEVO BLOQUE: determinar dirección del disparo
+            // si el enemigo está volteado, la bala se mueve hacia la izquierda
+            bool mirandoDerecha = !sprite.flipX;
+            bulletScript.SetDirection(mirandoDerecha);
+        }
     }
 
     // --- Parálisis con cooldown e indicadores visuales ---

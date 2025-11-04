@@ -35,23 +35,30 @@ public class PlayerShoot : MonoBehaviour
     }
 
     private void Shoot()
-{
-    Vector2 shootDirection = GetShootDirection();
-
-    // 💡 Ajusta aquí la altura de salida (por ejemplo 0.5 unidades arriba del sapo)
-    Vector3 spawnPos = transform.position + new Vector3(0f, 0.5f, 0f);
-
-    GameObject spark = Instantiate(sparkPrefab, spawnPos, Quaternion.identity);
-    Rigidbody2D sparkRb = spark.GetComponent<Rigidbody2D>();
-
-    if (sparkRb != null)
     {
-        sparkRb.linearVelocity = shootDirection * sparkSpeed;
+        Vector2 shootDirection = GetShootDirection();
+
+        // 💡 Ajusta aquí la altura de salida (por ejemplo 0.5 unidades arriba del sapo)
+        Vector3 spawnPos = transform.position + new Vector3(0f, 0.5f, 0f);
+
+        GameObject spark = Instantiate(sparkPrefab, spawnPos, Quaternion.identity);
+        Rigidbody2D sparkRb = spark.GetComponent<Rigidbody2D>();
+
+        if (sparkRb != null)
+        {
+            sparkRb.linearVelocity = shootDirection * sparkSpeed;
+        }
+
+        // ✅ NUEVO BLOQUE: enviar dirección al Spark si tiene SetDirection()
+        var sparkScript = spark.GetComponent<Spark>();
+        if (sparkScript != null)
+        {
+            // le decimos si el disparo va hacia la derecha o izquierda
+            sparkScript.SetDirection(shootDirection.x > 0);
+        }
+
+        nextFireTime = Time.time + fireRate;
     }
-
-    nextFireTime = Time.time + fireRate;
-}
-
 
     private Vector2 GetShootDirection()
     {
