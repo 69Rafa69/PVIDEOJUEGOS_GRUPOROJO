@@ -7,12 +7,12 @@ public class Door_Controller : MonoBehaviour
 
     private void Start()
     {
-        // Inicializa la referencia al SpriteRenderer
+        // Obtiene la referencia al SpriteRenderer
         sprite = GetComponent<SpriteRenderer>();
 
-        // (Opcional) Lanza advertencia si no hay sprite en el objeto
+        // Muestra una advertencia si no hay SpriteRenderer asignado
         if (sprite == null)
-            Debug.LogWarning("⚠️ No se encontró SpriteRenderer en la puerta: " + gameObject.name);
+            Debug.LogWarning("No se encontró SpriteRenderer en la puerta: " + gameObject.name);
     }
 
     public void OpenDoor()
@@ -20,13 +20,13 @@ public class Door_Controller : MonoBehaviour
         if (!isOpen)
         {
             isOpen = true;
-            Debug.Log("Puerta abierta!");
+            Debug.Log("Puerta abierta");
 
-            // Desactiva el sprite (lo oculta visualmente)
+            // Oculta el sprite
             if (sprite != null)
                 sprite.enabled = false;
 
-            // Desactiva el collider (permite pasar)
+            // Desactiva el collider para permitir el paso
             Collider2D col = GetComponent<Collider2D>();
             if (col != null)
                 col.enabled = false;

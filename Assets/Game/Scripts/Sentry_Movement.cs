@@ -20,6 +20,10 @@ public class Sentry_Movement : MonoBehaviour
     [SerializeField] private GameObject sentryAttackPrefab;
     [SerializeField] private float shootCooldown = 1.5f;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip shootSound;
+
     private Transform player;
     private float shootTimer;
 
@@ -30,15 +34,17 @@ public class Sentry_Movement : MonoBehaviour
         originalPosition = pos;
         limits = new Vector2(pos.x - limitLeft, pos.x + limitRight);
 
-        body = GetComponent<Rigidbody2D>();
         sprite = GetComponent<SpriteRenderer>();
         direction = 1; // Hacia la derecha
 
+        // Si no se asignó un AudioSource, intenta obtenerlo del objeto
+        if (audioSource == null)
+            audioSource = GetComponent<AudioSource>();
     }
 
     private void Start()
     {
-        // buscar al jugador por tag
+        // Buscar al jugador por tag
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
         if (playerObj != null)
             player = playerObj.transform;
@@ -48,26 +54,18 @@ public class Sentry_Movement : MonoBehaviour
     {
         DetectarYDisparar();
         shootTimer -= Time.deltaTime;
+
         if (direction != 0)
-        {
-            sprite.flipX = direction < 0 ? true : false;
-        }
+            sprite.flipX = direction < 0;
+
         Vector3 pos = transform.localPosition;
         if (pos.x <= limits.x)
-        {
-            // Si el enemigo intenta ir hacia la izquierda más allá de lo posible cambiamos de dirección
             direction = 1;
-        }
         if (pos.x >= limits.y)
-        {
-            // Si el enemigo intenta ir hacia la derecha más allá de lo posible cambiamos de dirección
             direction = -1;
-        }
+
         body.linearVelocityX = direction * speedX;
-
     }
-
-
 
     private void DetectarYDisparar()
     {
@@ -76,7 +74,7 @@ public class Sentry_Movement : MonoBehaviour
         float distancia = Vector2.Distance(transform.position, player.position);
         if (distancia <= detectionRange)
         {
-            // mirar al jugador
+            // Mirar al jugador
             if (player.position.x > transform.position.x)
                 transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
             else
@@ -98,6 +96,13 @@ public class Sentry_Movement : MonoBehaviour
             return;
         }
 
+        // Reproducir sonido de disparo
+        if (audioSource != null && shootSound != null)
+        {
+            audioSource.PlayOneShot(shootSound);
+        }
+
+        // Instanciar proyectil
         Vector3 dir = (targetPosition - firePoint.position).normalized;
         GameObject bullet = Instantiate(sentryAttackPrefab, firePoint.position, Quaternion.identity);
         Projectile_Sentry proj = bullet.GetComponent<Projectile_Sentry>();

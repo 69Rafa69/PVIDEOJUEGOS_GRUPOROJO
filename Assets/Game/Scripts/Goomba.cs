@@ -14,6 +14,10 @@ public class Goomba : MonoBehaviour, IParalyzable
     [SerializeField] private float paralysisDuration = 5f;
     [SerializeField] private float paralysisCooldown = 5f;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip paralisisClip; // Sonido al paralizar
+    [SerializeField] private AudioSource audioSource; // Fuente de audio
+
     private Rigidbody2D body;
     private Animator animator;
 
@@ -24,6 +28,17 @@ public class Goomba : MonoBehaviour, IParalyzable
     {
         body = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+
+        // Si no se asignó manualmente un AudioSource, intenta obtener uno del objeto
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+            if (audioSource == null)
+            {
+                audioSource = gameObject.AddComponent<AudioSource>();
+                audioSource.playOnAwake = false;
+            }
+        }
     }
 
     private void FixedUpdate()
@@ -63,14 +78,22 @@ public class Goomba : MonoBehaviour, IParalyzable
         // ⚡ Activar animación de parálisis
         animator.SetBool("isParalyzed", true);
 
+        // 🔊 Reproducir sonido de parálisis si hay clip asignado
+        if (paralisisClip != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(paralisisClip);
+        }
+
+        // Ajustar físicas durante la parálisis
         body.bodyType = RigidbodyType2D.Dynamic;
         body.gravityScale = 4f;
         body.constraints = RigidbodyConstraints2D.FreezeRotation;
         body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
 
+        // Esperar duración de la parálisis
         yield return new WaitForSeconds(paralysisDuration);
 
-        // Esperar a que toque suelo
+        // Esperar a que toque suelo antes de revivir
         yield return new WaitUntil(() => body.IsTouchingLayers(capaSuelo));
 
         // 🧠 Desactivar parálisis
@@ -83,7 +106,7 @@ public class Goomba : MonoBehaviour, IParalyzable
         // Detener movimiento durante relive
         body.linearVelocity = Vector2.zero;
 
-        // Esperar la duración de la animación (ajústala según tu clip)
+        // Esperar animación de revive
         yield return new WaitForSeconds(1.5f);
 
         // Restaurar movimiento normal

@@ -4,10 +4,10 @@ public class FloorButtonScript : MonoBehaviour
 {
     [SerializeField] private PortalScript[] portals;
     [SerializeField] private SpriteRenderer buttonSprite;
-    [SerializeField] private Sprite spriteIdle;     // Sprite cuando está sin presionar
+    [SerializeField] private Sprite spriteIdle;     // Sprite cuando no está presionado
     [SerializeField] private Sprite spritePressed;  // Sprite cuando está presionado
 
-    private int pressCount = 0; // Cuántos objetos están presionando el botón
+    private int pressCount = 0; // Cantidad de objetos sobre el botón
 
     private void Start()
     {
@@ -15,14 +15,14 @@ public class FloorButtonScript : MonoBehaviour
         foreach (var portal in portals)
             portal.SetActive(false);
 
-        // Configura el sprite inicial
+        // Asigna el sprite inicial
         if (buttonSprite != null && spriteIdle != null)
             buttonSprite.sprite = spriteIdle;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        // Solo cuenta Player o EnemyGrab
+        // Solo reacciona ante el jugador o un enemigo agarrado
         if (collision.CompareTag("Player") || collision.CompareTag("EnemyGrab"))
         {
             pressCount++;
@@ -32,12 +32,12 @@ public class FloorButtonScript : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        // Reduce contador cuando sale un objeto válido
+        // Disminuye el contador cuando un objeto válido se retira
         if (collision.CompareTag("Player") || collision.CompareTag("EnemyGrab"))
         {
             pressCount = Mathf.Max(pressCount - 1, 0);
 
-            // Solo desactiva si nadie más está encima
+            // Si no hay nada encima, cambia a estado inactivo
             if (pressCount == 0)
                 UpdateButtonState(false);
         }
@@ -49,7 +49,7 @@ public class FloorButtonScript : MonoBehaviour
         foreach (var portal in portals)
             portal.SetActive(pressed);
 
-        // Cambia el sprite según el estado
+        // Cambia el sprite según el estado actual
         if (buttonSprite != null)
             buttonSprite.sprite = pressed ? spritePressed : spriteIdle;
     }

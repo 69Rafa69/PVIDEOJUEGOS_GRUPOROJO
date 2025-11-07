@@ -14,38 +14,39 @@ public class EnemyScript : MonoBehaviour
 
     private void Awake()
     {
+        // Guarda la posición inicial y define los límites de movimiento
         Vector3 pos = transform.localPosition;
         originalPosition = pos;
         limits = new Vector2(pos.x - limitLeft, pos.x + limitRight);
 
+        // Obtiene las referencias necesarias
         body = GetComponent<Rigidbody2D>();
         sprite = GetComponent<SpriteRenderer>();
-        direction = 1; // Hacia la derecha
+
+        // Comienza moviéndose hacia la derecha
+        direction = 1;
     }
 
-    // Update is called once per frame
     private void Update()
     {
+        // Actualiza la orientación del sprite según la dirección
         if (direction != 0)
-        {
-            sprite.flipX = direction < 0 ? true : false;
-        }
+            sprite.flipX = direction < 0;
+
+        // Comprueba los límites y cambia la dirección si es necesario
         Vector3 pos = transform.localPosition;
         if (pos.x <= limits.x)
-        {
-            // Si el enemigo intenta ir hacia la izquierda más allá de lo posible cambiamos de dirección
             direction = 1;
-        }
         if (pos.x >= limits.y)
-        {
-            // Si el enemigo intenta ir hacia la derecha más allá de lo posible cambiamos de dirección
             direction = -1;
-        }
+
+        // Aplica la velocidad en el eje X
         body.linearVelocityX = direction * speedX;
     }
 
     private void OnDrawGizmos()
     {
+        // Dibuja los límites de patrullaje en el editor
         Vector3 pos = originalPosition != Vector3.zero ? originalPosition : transform.localPosition;
         Vector3 posLeft = new Vector3(pos.x - limitLeft, pos.y, pos.z);
         Vector3 posRight = new Vector3(pos.x + limitRight, pos.y, pos.z);
