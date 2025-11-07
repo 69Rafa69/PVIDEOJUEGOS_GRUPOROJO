@@ -8,14 +8,14 @@ public class Player_Movement : MonoBehaviour
     [SerializeField] private float speed = 5f;
     [SerializeField] private float jumpForce = 8f;
 
-    [Header("Detecci�n de suelo")]
+    [Header("Detección de suelo")]
     [SerializeField] private Transform groundCheck;
     [SerializeField] private float groundCheckDistance = 0.2f;
     [SerializeField] private LayerMask groundLayer;
 
-    // Nuevos parámetros de estabilidad de salto
-    [SerializeField] private float coyoteTime = 0.1f; // margen de tiempo tras dejar el suelo
-    [SerializeField] private float groundBuffer = 0.05f; // amortiguador para evitar falsos aterrizajes
+    [Header("Estabilidad de salto")]
+    [SerializeField] private float coyoteTime = 0.1f;
+    [SerializeField] private float groundBuffer = 0.05f;
 
     private Rigidbody2D rb;
     private SpriteRenderer sprite;
@@ -27,7 +27,7 @@ public class Player_Movement : MonoBehaviour
     private float moveInput;
     private bool isGrounded;
     private bool wasGrounded;
-    private float lastGroundedTime; // almacena el último momento en que tocó el suelo
+    private float lastGroundedTime;
 
     private void Awake()
     {
@@ -44,30 +44,26 @@ public class Player_Movement : MonoBehaviour
 
     private void Update()
     {
-        // Leer entrada del jugador
+        // Leer movimiento
         moveInput = moveAction.ReadValue<Vector2>().x;
 
-        // Comprobar si est� en el suelo
+        // Comprobar si está tocando el suelo
         bool groundCheckNow = CheckGround();
 
-        // Actualizar el tiempo del último contacto con el suelo
         if (groundCheckNow)
             lastGroundedTime = Time.time;
 
-        // Considerar como en suelo si el raycast detecta o si ha pasado poco desde el último contacto
+        // Permitir coyote jump
         isGrounded = groundCheckNow || (Time.time - lastGroundedTime <= coyoteTime);
 
-        // Actualizar animaciones
-        animator.SetBool("isWalking", Mathf.Abs(moveInput) > 0.05f);
+        // Actualizar parámetros del Animator
         animator.SetBool("isGrounded", groundCheckNow);
+        animator.SetBool("isWalking", Mathf.Abs(moveInput) > 0.05f);
+        animator.SetFloat("yVelocity", rb.linearVelocity.y);
 
         // Saltar
         if (jumpAction.WasPressedThisFrame() && isGrounded)
             Jump();
-
-        // Detectar aterrizaje (solo cuando realmente toca suelo estable)
-        if (!wasGrounded && groundCheckNow && Mathf.Abs(rb.linearVelocity.y) < groundBuffer)
-            animator.SetTrigger("Land");
 
         wasGrounded = groundCheckNow;
     }
@@ -84,18 +80,16 @@ public class Player_Movement : MonoBehaviour
 
     private void Jump()
     {
-        // Reiniciar velocidad vertical y aplicar impulso
+        // Reiniciar velocidad vertical para consistencia
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
         rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
 
-        // Control de triggers de animación
-        animator.ResetTrigger("Land");
+        // Lanzar trigger de salto
         animator.SetTrigger("Jump");
     }
 
     private bool CheckGround()
     {
-        // Raycast doble para detectar suelo
         Vector2 origin = groundCheck.position;
         float offset = 0.2f;
 
