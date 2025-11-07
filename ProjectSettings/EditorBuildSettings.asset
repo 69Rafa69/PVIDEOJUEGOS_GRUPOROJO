@@ -12,7 +12,16 @@ EditorBuildSettings:
     path: Assets/Game/Scenes/layoutFINAL.unity
     guid: 000f1dcac417a844881daef657864607
   - enabled: 1
-    path: Assets/Game/Scenes/layoutFINAL 1.unity
+    path: Assets/Game/Scenes/Sala_1.unity
+    guid: 01b875ae7d6ab8b4e8e4dc6860fb4275
+  - enabled: 1
+    path: Assets/Game/Scenes/Sala_2.unity
+    guid: d65524bd7c3e6c1408ac98baaf622d09
+  - enabled: 1
+    path: Assets/Game/Scenes/Sala_3.unity
+    guid: a2ec99ada3d89c842b31c697487cd379
+  - enabled: 1
+    path: Assets/Game/Scenes/Sala_4.unity
     guid: 45a61c4bca72f364e99bd6088fead1c5
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
