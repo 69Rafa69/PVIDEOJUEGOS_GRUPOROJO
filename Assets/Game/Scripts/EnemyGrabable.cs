@@ -3,41 +3,56 @@ using UnityEngine;
 public class EnemyGrabable : MonoBehaviour
 {
     private bool isGrabbed;
-    private Transform enemyContainer;
-    private CapsuleCollider2D capsuleCollider;
+    private Transform originalParent;
+
+    private SpriteRenderer sprite;
     private Rigidbody2D body;
+    private CapsuleCollider2D col;
+    private Goomba ai; // tu script de movimiento del enemigo
 
     private void Awake()
     {
-        // Inicializa referencias y estado inicial
-        isGrabbed = false;
-        enemyContainer = transform.parent;
-        capsuleCollider = GetComponent<CapsuleCollider2D>();
+        originalParent = transform.parent;
+        sprite = GetComponent<SpriteRenderer>();
         body = GetComponent<Rigidbody2D>();
+        col = GetComponent<CapsuleCollider2D>();
+        ai = GetComponent<Goomba>();
     }
 
     public void ChangeEnemyStatus(Transform grabZone)
     {
-        if (!isGrabbed)
-        {
-            // Asocia el enemigo a la zona de agarre
-            transform.SetParent(grabZone);
-            transform.localPosition = Vector3.zero;
-            isGrabbed = true;
+        isGrabbed = true;
 
-            // Desactiva colisión y física mientras está agarrado
-            capsuleCollider.enabled = false;
-            body.simulated = false;
-        }
-        else
-        {
-            // Restaura el enemigo a su contenedor original
-            transform.SetParent(enemyContainer);
-            isGrabbed = false;
+        ai.enabled = false;
+        body.simulated = false;
+        col.enabled = false;
 
-            // Reactiva colisión y física
-            capsuleCollider.enabled = true;
-            body.simulated = true;
-        }
+        transform.SetParent(grabZone);
+        transform.localPosition = Vector3.zero;
+
+        sprite.enabled = false; // invisible
+    }
+
+    public void HideTemporarily(float delay)
+    {
+        StartCoroutine(Reappear(delay));
+    }
+
+    private System.Collections.IEnumerator Reappear(float delay)
+    {
+        sprite.enabled = false;
+        ai.enabled = false;
+        body.simulated = false;
+        col.enabled = false;
+
+        yield return new WaitForSeconds(delay);
+
+        // reaparecer y reiniciar
+        sprite.enabled = true;
+        ai.enabled = true;
+        body.simulated = true;
+        col.enabled = true;
+
+        isGrabbed = false;
     }
 }

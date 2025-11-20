@@ -76138,6 +76138,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1375271857612293146, guid: 26d07c2e1f968554198eebaa264c2777, type: 3}
+      propertyPath: dropRespawnDelay
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 2227150015620865399, guid: 26d07c2e1f968554198eebaa264c2777, type: 3}
       propertyPath: m_Name
       value: Player
@@ -76209,7 +76213,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2227150015620865399, guid: 26d07c2e1f968554198eebaa264c2777, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2039082611}
   m_SourcePrefab: {fileID: 100100000, guid: 26d07c2e1f968554198eebaa264c2777, type: 3}
 --- !u!1 &1321244407
 GameObject:
@@ -76570,6 +76577,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6938333751826377876, guid: 11679c8a01532714eb799d68deebc75c, type: 3}
   m_PrefabInstance: {fileID: 560101669}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2001896101 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2227150015620865399, guid: 26d07c2e1f968554198eebaa264c2777, type: 3}
+  m_PrefabInstance: {fileID: 1274018217}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2020685228
 GameObject:
   m_ObjectHideFlags: 0
@@ -76606,6 +76618,19 @@ Animator:
   m_CorrespondingSourceObject: {fileID: 8635542340199277863, guid: 26d07c2e1f968554198eebaa264c2777, type: 3}
   m_PrefabInstance: {fileID: 1274018217}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2039082611
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2001896101}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d825514424277245b601125beaee06d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  respawnPoint: {fileID: 0}
 --- !u!1 &2110076883
 GameObject:
   m_ObjectHideFlags: 0

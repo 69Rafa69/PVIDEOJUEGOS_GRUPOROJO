@@ -8,13 +8,13 @@ public class BulletScript : MonoBehaviour
 
     private Rigidbody2D body;
     private Vector2 initialPosition;
-    private bool moveRight = true; // Controla la dirección de disparo
+    private bool moveRight = true; // ? agregado para controlar direcci�n
 
     private void Awake()
     {
         body = GetComponent<Rigidbody2D>();
         body.linearVelocity = new Vector2(speedX, speedY);
-        Debug.Log("La bala se ha inicializado");
+        Debug.Log("La bala se despierta...");
     }
 
     public void StartBullet()
@@ -22,19 +22,20 @@ public class BulletScript : MonoBehaviour
         initialPosition = transform.localPosition;
     }
 
-    // Cambia la dirección de disparo
+    // ? NUEVO M�TODO: permite cambiar la direcci�n de disparo (derecha o izquierda)
     public void SetDirection(bool right)
     {
         moveRight = right;
+
         float dir = moveRight ? 1f : -1f;
 
         if (body != null)
         {
-            // Ajusta la velocidad según la dirección
+            // Invierte la direcci�n en X seg�n el flip del enemigo
             body.linearVelocity = new Vector2(Mathf.Abs(speedX) * dir, speedY);
         }
 
-        // Voltea el sprite si dispara a la izquierda
+        // Invierte el sprite visualmente si va a la izquierda
         transform.localScale = new Vector3(moveRight ? 1 : -1, 1, 1);
     }
 
@@ -44,7 +45,7 @@ public class BulletScript : MonoBehaviour
         if (distance >= maxDistance)
         {
             Destroy(gameObject);
-            Debug.Log("Bala destruida");
+            Debug.Log("Destruida la bala...");
         }
     }
 }

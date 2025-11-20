@@ -9,7 +9,7 @@ public class LaserBulletScript : MonoBehaviour
 
     [Header("Animaci�n")]
     [SerializeField] private Animator animator;
-    [SerializeField] private float animationSpeed = 0.6f; 
+    [SerializeField] private float animationSpeed = 0.6f; // m�s lento = efecto el�ctrico suave
 
     private Rigidbody2D rb;
 
@@ -46,7 +46,7 @@ public class LaserBulletScript : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // Si impacta algo que implementa IParalyzable o danio
+        // Si impacta algo que implementa IParalyzable o da�o
         IParalyzable paralyzable = other.GetComponent<IParalyzable>();
         if (paralyzable != null)
         {

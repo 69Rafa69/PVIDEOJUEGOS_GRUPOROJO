@@ -9,13 +9,13 @@ public class EnemyShooter : MonoBehaviour, IParalyzable
 
     [Header("Parálisis")]
     [SerializeField] private float paralysisDuration = 5f;
-    [SerializeField] private float paralysisCooldown = 5f; // Tiempo de inmunidad tras recuperarse
+    [SerializeField] private float paralysisCooldown = 5f; // ⏳ tiempo de inmunidad tras recuperar el control
 
     private Transform bulletContainerTransform;
     private float timer;
     private SpriteRenderer sprite;
 
-    private bool isImmune = false; // Evita múltiples parálisis seguidas
+    private bool isImmune = false; // evita spam de parálisis
     public bool isParalyzed { get; private set; } = false;
 
     private void Awake()
@@ -26,7 +26,6 @@ public class EnemyShooter : MonoBehaviour, IParalyzable
 
     private void Start()
     {
-        // Obtiene la referencia al contenedor de balas
         GameObject bulletContainer = GameObject.FindGameObjectWithTag("BulletContainer");
         if (bulletContainer != null)
             bulletContainerTransform = bulletContainer.transform;
@@ -34,8 +33,7 @@ public class EnemyShooter : MonoBehaviour, IParalyzable
 
     private void Update()
     {
-        // No dispara si está paralizado
-        if (isParalyzed) return;
+        if (isParalyzed) return; // paralizado → no dispara
 
         timer += Time.deltaTime;
         if (timer >= timeToShoot)
@@ -49,26 +47,26 @@ public class EnemyShooter : MonoBehaviour, IParalyzable
     {
         if (bullet == null || bulletContainerTransform == null) return;
 
-        // Crea una nueva bala dentro del contenedor
         GameObject bulletObject = Instantiate(bullet, bulletContainerTransform);
         bulletObject.transform.localPosition = transform.localPosition;
 
-        // Configura la bala
+        //  Conserva tu llamada original
         BulletScript bulletScript = bulletObject.GetComponent<BulletScript>();
         if (bulletScript != null)
         {
             bulletScript.StartBullet();
 
-            // Define la dirección según la orientación del enemigo
+            //  NUEVO BLOQUE: determinar dirección del disparo
+            // si el enemigo está volteado, la bala se mueve hacia la izquierda
             bool mirandoDerecha = !sprite.flipX;
             bulletScript.SetDirection(mirandoDerecha);
         }
     }
 
+    // --- Parálisis con cooldown e indicadores visuales ---
     public void Paralyze()
     {
-        // Evita aplicar parálisis si ya está paralizado o es inmune
-        if (isParalyzed || isImmune) return;
+        if (isParalyzed || isImmune) return; // ⛔ no se puede stunear si ya lo está o es inmune
 
         Debug.Log($"EnemyShooter paralizado durante {paralysisDuration} segundos");
         StartCoroutine(ParalysisRoutine());
@@ -78,16 +76,15 @@ public class EnemyShooter : MonoBehaviour, IParalyzable
     {
         isParalyzed = true;
 
-        // Cambia color para indicar parálisis
         if (sprite != null)
             sprite.color = Color.gray;
 
         yield return new WaitForSeconds(paralysisDuration);
 
-        // Recupera movimiento
+        // Termina la parálisis
         isParalyzed = false;
 
-        // Inicia el periodo de inmunidad
+        // Comienza inmunidad
         StartCoroutine(ParalysisCooldownRoutine());
     }
 
@@ -95,17 +92,17 @@ public class EnemyShooter : MonoBehaviour, IParalyzable
     {
         isImmune = true;
 
-        // Color amarillo = inmune
+        // Color amarillo → indica inmunidad
         if (sprite != null)
             sprite.color = Color.yellow;
 
-        Debug.Log($"EnemyShooter inmune durante {paralysisCooldown} segundos");
+        Debug.Log($"EnemyShooter inmune a la parálisis durante {paralysisCooldown} segundos");
 
         yield return new WaitForSeconds(paralysisCooldown);
 
         isImmune = false;
 
-        // Vuelve al color normal
+        // Regresa al color normal
         if (sprite != null)
             sprite.color = Color.white;
     }
