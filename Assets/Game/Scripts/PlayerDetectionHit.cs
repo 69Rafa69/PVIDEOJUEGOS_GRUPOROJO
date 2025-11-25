@@ -1,14 +1,25 @@
 using UnityEngine;
 
+[RequireComponent(typeof(AudioSource))] // <--- Asegura que haya AudioSource
 public class PlayerDetectionHit : MonoBehaviour
 {
+    [Header("Audio")] // <--- NUEVO
+    [SerializeField] private AudioClip deathSound;
+
+    private AudioSource audioSource;
+
+    private void Awake()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
-  if (collision.gameObject.CompareTag("DeadZone") ||
-        (collision.gameObject.CompareTag("Enemy") && !IsEnemyParalyzed(collision.gameObject)))
-    {
-        SpawnPlayer();
-    }
+        if (collision.gameObject.CompareTag("DeadZone") ||
+            (collision.gameObject.CompareTag("Enemy") && !IsEnemyParalyzed(collision.gameObject)))
+        {
+            SpawnPlayer();
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -16,34 +27,30 @@ public class PlayerDetectionHit : MonoBehaviour
         if (collision.gameObject.CompareTag("Bullet"))
         {
             SpawnPlayer();
-            // Desaparecemos la bala
             Destroy(collision.gameObject);
         }
     }
 
-    // Método para verificar si un enemigo está paralizado
     private bool IsEnemyParalyzed(GameObject enemy)
     {
-        // Buscar el componente IParalyzable en el enemigo
         IParalyzable paralyzableEnemy = enemy.GetComponent<IParalyzable>();
-
-        // Si el enemigo tiene el componente IParalyzable, verificar su estado
         if (paralyzableEnemy != null)
         {
-            // Asume que tienes una propiedad o método isParalyzed en tu interfaz
-            // Si no la tienes, necesitarás modificar tu interfaz IParalyzable
             return paralyzableEnemy.isParalyzed;
         }
-
-        // Si no tiene el componente, asumir que no está paralizado
         return false;
     }
 
     private void SpawnPlayer()
     {
-        // Ubicamos el SpawnPoint, eso significa que el spawnpoint debe tener su etiqueta (tag)
+        // <--- NUEVO: Reproducir sonido de muerte
+        if (audioSource != null && deathSound != null)
+        {
+            audioSource.PlayOneShot(deathSound);
+        }
+
         GameObject spawn = GameObject.FindGameObjectWithTag("SpawnPoint");
-        // Mandamos al player a esa posición.
-        transform.localPosition = spawn.transform.localPosition;
+        if (spawn != null)
+            transform.localPosition = spawn.transform.localPosition;
     }
 }

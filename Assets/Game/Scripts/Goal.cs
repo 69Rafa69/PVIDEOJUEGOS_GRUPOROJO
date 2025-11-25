@@ -1,13 +1,24 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections; // Necesario para IEnumerator
 
+[RequireComponent(typeof(AudioSource))] // Asegura que haya un AudioSource
 public class Goal : MonoBehaviour
 {
     [Header("Configuración de escena")]
-    [SerializeField] private string nextSceneName; // Nombre exacto de la escena a cargar
-    [SerializeField] private float delayBeforeLoad = 0.5f; // Pequeño retraso opcional
+    [SerializeField] private string nextSceneName;
+    [SerializeField] private float delayBeforeLoad = 2.3f; // Aumentado a 2s para oír el audio
 
-    private bool isTriggered = false; // Evita múltiples activaciones
+    [Header("Configuración de Audio")] // <--- NUEVO
+    [SerializeField] private AudioClip winSound;
+
+    private AudioSource audioSource;
+    private bool isTriggered = false;
+
+    private void Awake()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -15,24 +26,32 @@ public class Goal : MonoBehaviour
         if (!isTriggered && collision.CompareTag("Player"))
         {
             isTriggered = true;
-            Debug.Log("Meta alcanzada, cambiando de escena...");
+
+            // 1. Reproducir sonido de victoria INMEDIATAMENTE
+            if (audioSource != null && winSound != null)
+            {
+                audioSource.PlayOneShot(winSound);
+            }
+
+            Debug.Log("Meta alcanzada, esperando sonido...");
+
+            // 2. Iniciar la espera para cambiar de escena
             StartCoroutine(LoadNextScene());
         }
     }
 
-    private System.Collections.IEnumerator LoadNextScene()
+    private IEnumerator LoadNextScene()
     {
-        // Espera opcional (para mostrar animación o sonido)
+        // Espera el tiempo configurado (asegúrate que sea suficiente para oír el audio)
         yield return new WaitForSeconds(delayBeforeLoad);
 
-        // Verifica que el nombre esté configurado
         if (!string.IsNullOrEmpty(nextSceneName))
         {
             SceneManager.LoadScene(nextSceneName);
         }
         else
         {
-            Debug.LogError("No se ha asignado el nombre de la siguiente escena en GoalTrigger.");
+            Debug.LogError("No se ha asignado el nombre de la siguiente escena en Goal.");
         }
     }
 }

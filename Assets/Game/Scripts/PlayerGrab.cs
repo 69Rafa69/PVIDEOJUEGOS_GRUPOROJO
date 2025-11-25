@@ -1,11 +1,16 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(AudioSource))]
 public class PlayerGrab : MonoBehaviour
 {
     [SerializeField] private Transform grabZone;
     [SerializeField] private Transform dropPoint;
-    [SerializeField] private float dropRespawnDelay = 0.8f; // ⏳ tiempo antes de mostrar al enemigo
+    [SerializeField] private float dropRespawnDelay = 0.8f;
+
+    [Header("Audio")] // <--- NUEVO
+    [SerializeField] private AudioClip grabSound; // Sonido al levantar
+    [SerializeField] private AudioClip dropSound; // Sonido al soltar
 
     private InputAction interactAction;
     private EnemyGrabable currentEnemy;
@@ -14,18 +19,18 @@ public class PlayerGrab : MonoBehaviour
 
     private Animator animator;
     private InputAction moveAction;
+    private AudioSource audioSource; // <--- NUEVO
 
     private void Awake()
     {
-        // Crear dropPoint si no está asignado
+        audioSource = GetComponent<AudioSource>(); // <--- NUEVO
+
         if (dropPoint == null)
         {
             GameObject autoDrop = new GameObject("AutoDropPoint");
             autoDrop.transform.SetParent(transform);
             autoDrop.transform.localPosition = new Vector3(0.5f, -0.2f, 0);
             dropPoint = autoDrop.transform;
-
-            Debug.LogWarning("⚠ DropPoint no asignado. Creado automáticamente.");
         }
     }
 
@@ -38,7 +43,6 @@ public class PlayerGrab : MonoBehaviour
 
     private void Update()
     {
-        // --- ANIMACIONES SOLO SI ESTÁ SOSTENIENDO ---
         if (isGrabbing)
         {
             float moveX = Mathf.Abs(moveAction.ReadValue<Vector2>().x);
@@ -48,24 +52,25 @@ public class PlayerGrab : MonoBehaviour
         else
         {
             animator.SetBool("isHolding", false);
-            // ❌ YA NO PISAMOS isWalking = false (lo maneja el script principal)
         }
 
-        // --- INPUT ---
         if (interactAction.WasPressedThisFrame())
         {
             if (!isGrabbing && currentEnemy != null)
             {
-                // GRAB
+                // --- GRAB ---
                 grabbedEnemy = currentEnemy;
                 grabbedEnemy.ChangeEnemyStatus(grabZone);
 
                 isGrabbing = true;
                 animator.SetTrigger("Pickup");
+
+                // <--- NUEVO: Sonido Agarrar
+                PlaySound(grabSound);
             }
             else if (isGrabbing && grabbedEnemy != null)
             {
-                // DROP
+                // --- DROP ---
                 StartCoroutine(HandleDrop());
             }
         }
@@ -75,17 +80,24 @@ public class PlayerGrab : MonoBehaviour
     {
         animator.SetTrigger("Drop");
 
+        // <--- NUEVO: Sonido Soltar
+        PlaySound(dropSound);
+
         grabbedEnemy.transform.SetParent(null);
         grabbedEnemy.transform.position = dropPoint.position;
 
-        // Ocultar y desactivar por un tiempo
         grabbedEnemy.HideTemporarily(dropRespawnDelay);
 
-        // liberar estado
         isGrabbing = false;
         grabbedEnemy = null;
 
         yield return null;
+    }
+
+    private void PlaySound(AudioClip clip)
+    {
+        if (audioSource != null && clip != null)
+            audioSource.PlayOneShot(clip);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

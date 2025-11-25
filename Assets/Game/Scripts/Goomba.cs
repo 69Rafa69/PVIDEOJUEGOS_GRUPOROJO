@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
+[RequireComponent(typeof(AudioSource))]
 public class Goomba : MonoBehaviour, IParalyzable
 {
     [Header("Movimiento")]
@@ -11,19 +12,26 @@ public class Goomba : MonoBehaviour, IParalyzable
     [SerializeField] private LayerMask capaSuelo;
 
     [Header("Parálisis")]
-    [SerializeField] private float paralysisDuration = 5f;
-    [SerializeField] private float paralysisCooldown = 5f;
+    [SerializeField] private float paralysisDuration = 20f;
+    // (Borrado) paralysisCooldown ya no es necesario
+
+    [Header("Audio")]
+    [SerializeField] private AudioClip paralyzeSound;
+    [SerializeField] private AudioClip reviveSound;
+    [SerializeField, Range(0f, 0.5f)] private float hitSoundDelay = 0.15f;
 
     private Rigidbody2D body;
     private Animator animator;
+    private AudioSource audioSource;
 
     public bool isParalyzed { get; private set; } = false;
-    private bool isImmune = false;
+    // (Borrado) isImmune ya no es necesario
 
     private void Awake()
     {
         body = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     private void FixedUpdate()
@@ -52,7 +60,10 @@ public class Goomba : MonoBehaviour, IParalyzable
 
     public void Paralyze()
     {
-        if (isParalyzed || isImmune) return;
+        // CAMBIO: Ya solo revisamos si está paralizado actualmente.
+        // Si ya está en el suelo, ignoramos el disparo para no reiniciar la animación glitchy.
+        if (isParalyzed) return;
+
         StartCoroutine(ParalysisRoutine());
     }
 
@@ -68,9 +79,20 @@ public class Goomba : MonoBehaviour, IParalyzable
         body.constraints = RigidbodyConstraints2D.FreezeRotation;
         body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
 
-        yield return new WaitForSeconds(paralysisDuration);
+        // --- AUDIO (Con delay) ---
+        yield return new WaitForSeconds(hitSoundDelay);
 
-        // Esperar a que toque suelo
+        if (audioSource != null && paralyzeSound != null)
+        {
+            audioSource.pitch = Random.Range(0.9f, 1.1f);
+            audioSource.PlayOneShot(paralyzeSound);
+        }
+        // -------------------------
+
+        // Restamos el delay a la duración total
+        yield return new WaitForSeconds(paralysisDuration - hitSoundDelay);
+
+        // Esperar a que toque suelo (por si cayó de una plataforma)
         yield return new WaitUntil(() => body.IsTouchingLayers(capaSuelo));
 
         // 🧠 Desactivar parálisis
@@ -80,10 +102,13 @@ public class Goomba : MonoBehaviour, IParalyzable
         // ✨ Activar trigger para relive
         animator.SetTrigger("revive");
 
+        if (audioSource != null && reviveSound != null)
+            audioSource.PlayOneShot(reviveSound);
+
         // Detener movimiento durante relive
         body.linearVelocity = Vector2.zero;
 
-        // Esperar la duración de la animación (ajústala según tu clip)
+        // Esperar la duración de la animación de revivir
         yield return new WaitForSeconds(1.5f);
 
         // Restaurar movimiento normal
@@ -91,15 +116,12 @@ public class Goomba : MonoBehaviour, IParalyzable
         body.gravityScale = 0f;
         body.collisionDetectionMode = CollisionDetectionMode2D.Discrete;
 
-        StartCoroutine(ParalysisCooldownRoutine());
+        if (audioSource != null) audioSource.pitch = 1f;
+
+        // (Borrado) Ya no iniciamos la rutina de Cooldown aquí
     }
 
-    private IEnumerator ParalysisCooldownRoutine()
-    {
-        isImmune = true;
-        yield return new WaitForSeconds(paralysisCooldown);
-        isImmune = false;
-    }
+    // (Borrado) El método IEnumerator ParalysisCooldownRoutine ha sido eliminado
 
     private void OnDrawGizmos()
     {
@@ -112,6 +134,7 @@ public class Goomba : MonoBehaviour, IParalyzable
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        // Solo hace daño si NO está paralizado
         if (collision.gameObject.CompareTag("Player") && !isParalyzed)
         {
             PlayerDetectionHit playerHit = collision.gameObject.GetComponent<PlayerDetectionHit>();

@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(SpriteRenderer), typeof(Animator))]
+[RequireComponent(typeof(AudioSource))]
 public class Player_Movement : MonoBehaviour
 {
     [Header("Movimiento")]
@@ -17,9 +18,15 @@ public class Player_Movement : MonoBehaviour
     [SerializeField] private float coyoteTime = 0.1f;
     [SerializeField] private float groundBuffer = 0.05f;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip landSound;
+    [SerializeField] private AudioClip footstepSound;
+    [SerializeField] private float stepRate = 0.35f;
+
     private Rigidbody2D rb;
     private SpriteRenderer sprite;
     private Animator animator;
+    private AudioSource audioSource;
 
     private InputAction moveAction;
     private InputAction jumpAction;
@@ -29,11 +36,16 @@ public class Player_Movement : MonoBehaviour
     private bool wasGrounded;
     private float lastGroundedTime;
 
+    // Variables para control de audio
+    private float nextStepTime;
+    private float lastLandTime; // <--- NUEVO: Para evitar repetición del sonido
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         sprite = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     private void OnEnable()
@@ -44,24 +56,37 @@ public class Player_Movement : MonoBehaviour
 
     private void Update()
     {
-        // Leer movimiento
         moveInput = moveAction.ReadValue<Vector2>().x;
 
-        // Comprobar si está tocando el suelo
         bool groundCheckNow = CheckGround();
 
         if (groundCheckNow)
             lastGroundedTime = Time.time;
 
-        // Permitir coyote jump
         isGrounded = groundCheckNow || (Time.time - lastGroundedTime <= coyoteTime);
 
-        // Actualizar parámetros del Animator
+        // --- CORRECCIÓN SONIDO ATERRIZAJE ---
+        // Condición 1: Antes estaba en el aire (!wasGrounded) y ahora en suelo (groundCheckNow)
+        // Condición 2: Estaba cayendo con fuerza (rb.linearVelocity.y < -0.1f). Evita sonidos al caminar cuestas.
+        // Condición 3: Han pasado al menos 0.2s desde el último sonido (Time.time > lastLandTime + 0.2f)
+        if (!wasGrounded && groundCheckNow && rb.linearVelocity.y < -0.5f && Time.time > lastLandTime + 0.2f)
+        {
+            PlaySound(landSound, 0.7f);
+            lastLandTime = Time.time; // Guardamos el momento del sonido
+        }
+        // ------------------------------------
+
+        // Lógica de pasos (Caminar)
+        if (isGrounded && Mathf.Abs(moveInput) > 0.05f && Time.time >= nextStepTime)
+        {
+            PlaySound(footstepSound, Random.Range(0.8f, 1f));
+            nextStepTime = Time.time + stepRate;
+        }
+
         animator.SetBool("isGrounded", groundCheckNow);
         animator.SetBool("isWalking", Mathf.Abs(moveInput) > 0.05f);
         animator.SetFloat("yVelocity", rb.linearVelocity.y);
 
-        // Saltar
         if (jumpAction.WasPressedThisFrame() && isGrounded)
             Jump();
 
@@ -70,21 +95,16 @@ public class Player_Movement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        // Movimiento horizontal
         rb.linearVelocity = new Vector2(moveInput * speed, rb.linearVelocity.y);
 
-        // Voltear sprite
         if (Mathf.Abs(moveInput) > 0.05f)
             sprite.flipX = moveInput < 0;
     }
 
     private void Jump()
     {
-        // Reiniciar velocidad vertical para consistencia
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
         rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-
-        // Lanzar trigger de salto
         animator.SetTrigger("Jump");
     }
 
@@ -96,9 +116,14 @@ public class Player_Movement : MonoBehaviour
         RaycastHit2D leftRay = Physics2D.Raycast(origin + Vector2.left * offset, Vector2.down, groundCheckDistance, groundLayer);
         RaycastHit2D rightRay = Physics2D.Raycast(origin + Vector2.right * offset, Vector2.down, groundCheckDistance, groundLayer);
 
-        Debug.DrawRay(origin + Vector2.left * offset, Vector2.down * groundCheckDistance, leftRay ? Color.green : Color.red);
-        Debug.DrawRay(origin + Vector2.right * offset, Vector2.down * groundCheckDistance, rightRay ? Color.green : Color.red);
-
         return leftRay.collider != null || rightRay.collider != null;
+    }
+
+    private void PlaySound(AudioClip clip, float volume = 1f)
+    {
+        if (audioSource != null && clip != null)
+        {
+            audioSource.PlayOneShot(clip, volume);
+        }
     }
 }
