@@ -1,63 +1,93 @@
 using UnityEngine;
 
+/// <summary>
+/// Controla el comportamiento del proyectil "Spark".
+/// Maneja movimiento lineal, ciclo de vida (tiempo) e interacciones con IParalyzable.
+/// </summary>
+[RequireComponent(typeof(Rigidbody2D))] // Asegura que el componente físico exista para evitar NullReference.
 public class Spark : MonoBehaviour
 {
-    [Header("Duraci�n")]
+    [Header("Configuración de Vida")]
+    [Tooltip("Tiempo en segundos antes de que el proyectil se autodestruya.")]
     [SerializeField] private float duration = 10f;
 
-    [Header("Movimiento")]
+    [Header("Física y Movimiento")]
     [SerializeField] private float speed = 5f;
     [SerializeField] private bool moveRight = true;
 
-    [Header("Animaci�n")]
-    [SerializeField] private Animator animator; // ? nuevo campo opcional para reproducir animaci�n
+    [Header("Visuales")]
+    [Tooltip("Opcional. Si se asigna, se fuerza el estado 'Spark_Anim' al iniciar.")]
+    [SerializeField] private Animator animator;
 
     private Rigidbody2D rb;
 
-    // Si colisiona con un enemigo
-    void OnTriggerEnter2D(Collider2D other) // Cambiado a OnTriggerEnter2D
+    private void Awake()
     {
-        IParalyzable paralyzable = other.GetComponent<IParalyzable>(); // Llamar a la interfaz
-        if (paralyzable != null) // Solo si es un enemigo paralizable
-        {
-            paralyzable.Paralyze();  // Paralizarlo
-            Destroy(gameObject);    // Destruir la bala
-        }
+        // Inicializamos referencias en Awake en lugar de Start.
+        // Esto previene errores si SetDirection() es llamado inmediatamente después de instanciar.
+        rb = GetComponent<Rigidbody2D>();
     }
 
-    // Si no colisiona
-    void Start()
+    private void Start()
     {
-        // ?? Configuraci�n de Rigidbody y movimiento inicial
-        rb = GetComponent<Rigidbody2D>();
-        if (rb != null)
-        {
-            float direction = moveRight ? 1f : -1f;
-            rb.linearVelocity = new Vector2(speed * direction, 0f);
+        // Configuración inicial de movimiento
+        ApplyMovement();
 
-            // ?? Ajuste visual seg�n direcci�n
-            if (!moveRight)
-                transform.localScale = new Vector3(-1, 1, 1);
+        // Feedback visual inicial
+        if (animator != null)
+        {
+            animator.Play("Spark_Anim", 0, 0f);
         }
 
-        // ?? Si hay animador, iniciar animaci�n del Spark
-        if (animator != null)
-            animator.Play("Spark_Anim", 0, 0f);
-
-        // ?? Destruye despu�s de la duraci�n especificada
+        // Gestión automática del ciclo de vida (Memory Management)
         Destroy(gameObject, duration);
     }
 
-    // ? Nuevo m�todo p�blico para definir direcci�n desde PlayerShoot
-    public void SetDirection(bool right)
+    /// <summary>
+    /// Detecta colisiones tipo Trigger.
+    /// Filtra objetos que implementen la interfaz IParalyzable.
+    /// </summary>
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        moveRight = right;
+        // Optimización: TryGetComponent es más eficiente y limpio que GetComponent + check de null.
+        if (other.TryGetComponent<IParalyzable>(out var paralyzable))
+        {
+            paralyzable.Paralyze();
+            Destroy(gameObject); // El proyectil se consume al impactar
+        }
+    }
+
+    /// <summary>
+    /// Configura la dirección del proyectil desde una clase externa (ej. PlayerShoot).
+    /// </summary>
+    /// <param name="isFacingRight">True para derecha, False para izquierda.</param>
+    public void SetDirection(bool isFacingRight)
+    {
+        moveRight = isFacingRight;
+
+        // Aplicamos el movimiento inmediatamente si el objeto ya está inicializado
         if (rb != null)
         {
-            float direction = moveRight ? 1f : -1f;
-            rb.linearVelocity = new Vector2(speed * direction, 0f);
-            if (!moveRight)
-                transform.localScale = new Vector3(-1, 1, 1);
+            ApplyMovement();
         }
+    }
+
+    /// <summary>
+    /// Aplica la velocidad y rotación visual basada en el estado actual.
+    /// Centraliza la lógica para evitar código duplicado en Start y SetDirection.
+    /// </summary>
+    private void ApplyMovement()
+    {
+        // Cálculo de dirección
+        float directionMultiplier = moveRight ? 1f : -1f;
+
+        // NOTA: 'linearVelocity' es exclusivo de Unity 6. Usar 'velocity' en versiones anteriores.
+        rb.linearVelocity = new Vector2(speed * directionMultiplier, 0f);
+
+        // Flip visual
+        // TODO: Considerar usar SpriteRenderer.flipX si el objeto es simple, es más performante que modificar localScale.
+        Vector3 newScale = transform.localScale;
+        newScale.x = moveRight ? Mathf.Abs(newScale.x) : -Mathf.Abs(newScale.x);
+        transform.localScale = newScale;
     }
 }

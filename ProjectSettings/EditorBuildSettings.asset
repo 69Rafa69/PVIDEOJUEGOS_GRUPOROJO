@@ -12,6 +12,9 @@ EditorBuildSettings:
     path: Assets/Game/Scenes/Lore.unity
     guid: 9e63ae8574431f64fa4f50286fed7725
   - enabled: 1
+    path: Assets/Game/Scenes/Controls.unity
+    guid: e3a8316fd4793db409d7f78561f569f0
+  - enabled: 1
     path: Assets/Game/Scenes/Sala_1.unity
     guid: 1625d836fae5494428159f4c49c85b27
   - enabled: 1

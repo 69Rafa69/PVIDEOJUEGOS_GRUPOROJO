@@ -1,15 +1,18 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using System.Collections; // Necesario para IEnumerator
+using System.Collections;
 
-[RequireComponent(typeof(AudioSource))] // Asegura que haya un AudioSource
+[RequireComponent(typeof(AudioSource))]
 public class Goal : MonoBehaviour
 {
     [Header("Configuración de escena")]
+    [Tooltip("Nombre exacto de la escena a cargar.")]
     [SerializeField] private string nextSceneName;
-    [SerializeField] private float delayBeforeLoad = 2.3f; // Aumentado a 2s para oír el audio
 
-    [Header("Configuración de Audio")] // <--- NUEVO
+    [Tooltip("Tiempo de espera ANTES de que la pantalla empiece a oscurecerse.")]
+    [SerializeField] private float delayBeforeFade = 2.0f;
+
+    [Header("Configuración de Audio")]
     [SerializeField] private AudioClip winSound;
 
     private AudioSource audioSource;
@@ -22,36 +25,49 @@ public class Goal : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        // Solo reacciona si el jugador toca la meta
-        if (!isTriggered && collision.CompareTag("Player"))
+        // Evitamos que se active dos veces
+        if (isTriggered) return;
+
+        if (collision.CompareTag("Player"))
         {
             isTriggered = true;
+            Debug.Log("¡Meta alcanzada!");
 
-            // 1. Reproducir sonido de victoria INMEDIATAMENTE
+            // 1. Reproducir sonido de victoria
             if (audioSource != null && winSound != null)
             {
                 audioSource.PlayOneShot(winSound);
             }
 
-            Debug.Log("Meta alcanzada, esperando sonido...");
-
-            // 2. Iniciar la espera para cambiar de escena
-            StartCoroutine(LoadNextScene());
+            // 2. Iniciar la secuencia de salida
+            StartCoroutine(SequenceEndLevel());
         }
     }
 
-    private IEnumerator LoadNextScene()
+    private IEnumerator SequenceEndLevel()
     {
-        // Espera el tiempo configurado (asegúrate que sea suficiente para oír el audio)
-        yield return new WaitForSeconds(delayBeforeLoad);
+        // PASO 1: Esperar un poco para celebrar (oír el audio)
+        // El jugador sigue viendo el juego mientras suena la música
+        yield return new WaitForSeconds(delayBeforeFade);
 
-        if (!string.IsNullOrEmpty(nextSceneName))
+        // PASO 2: Buscar el sistema de transición
+        Fade_transition fader = FindObjectOfType<Fade_transition>();
+
+        if (fader != null)
         {
-            SceneManager.LoadScene(nextSceneName);
+            // Si existe, le pedimos que haga el fundido y cambie la escena
+            Debug.Log("Iniciando transición suave...");
+            fader.LoadScene(nextSceneName);
         }
         else
         {
-            Debug.LogError("No se ha asignado el nombre de la siguiente escena en Goal.");
+            // FALLBACK: Si olvidaste poner el Canvas de transición, carga de golpe
+            // para que el juego no se quede atascado.
+            Debug.LogWarning("No se encontró Fade_transition. Cargando directo.");
+            if (!string.IsNullOrEmpty(nextSceneName))
+            {
+                SceneManager.LoadScene(nextSceneName);
+            }
         }
     }
 }

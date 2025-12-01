@@ -1,82 +1,129 @@
-using System.Collections; // <--- NECESARIO para que funcione el tiempo de espera
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Gestiona la lógica de teletransportación bidireccional.
+/// Controla el estado visual, el audio y previene bucles de teletransporte inmediatos.
+/// </summary>
 [RequireComponent(typeof(SpriteRenderer))]
 [RequireComponent(typeof(AudioSource))]
 public class PortalScript : MonoBehaviour
 {
+    // HashSet para rastrear objetos que acaban de llegar a este portal.
+    // Esto evita que el portal te envíe de vuelta inmediatamente al tocar el collider de salida.
     private HashSet<GameObject> portalObjects = new HashSet<GameObject>();
 
-    [Header("Configuración del portal")]
+    [Header("Conexiones")]
+    [Tooltip("El destino donde aparecerá el jugador. Si es otro portal, se vinculará la lógica de cooldown.")]
     [SerializeField] private Transform destination;
+
+    [Header("Estado Inicial")]
     [SerializeField] private bool isActive = false;
 
-    [Header("Sprites visuales")]
+    [Header("Configuración Visual")]
     [SerializeField] private Sprite activeSprite;
     [SerializeField] private Sprite inactiveSprite;
 
-    [Header("Efectos de Audio")]
-    [SerializeField] private AudioClip openSound;     // Suena cuando el botón lo activa
-    [SerializeField] private AudioClip teleportSound; // Suena cuando el jugador viaja
-    [SerializeField, Range(0f, 1f)] private float soundDelay = 0.2f; // <--- NUEVO: Tiempo de espera (0.2s recomendado)
+    [Header("Configuración de Audio")]
+    [SerializeField] private AudioClip openSound;     // Sonido de activación (Switch)
+    [SerializeField] private AudioClip teleportSound; // Sonido de viaje (Whoosh)
 
+    [Tooltip("Retraso para el sonido de apertura. Útil para no solapar con el sonido del interruptor.")]
+    [SerializeField, Range(0f, 1f)] private float soundDelay = 0.2f;
+
+    // Componentes cacheados
     private SpriteRenderer spriteRenderer;
     private AudioSource audioSource;
+    private Coroutine openSoundCoroutine;
 
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         audioSource = GetComponent<AudioSource>();
+
+        // Inicializa el estado visual sin reproducir sonido
         UpdatePortalSprite();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        // Guard Clauses: Validaciones rápidas para salir del método si no cumple requisitos
         if (!isActive) return;
         if (!collision.CompareTag("Player")) return;
+
+        // Si el objeto está en la lista de bloqueo (acaba de llegar aquí desde otro portal), ignoramos.
         if (portalObjects.Contains(collision.gameObject)) return;
 
-        if (destination != null && destination.TryGetComponent(out PortalScript destinationPortal))
+        // Lógica de Teletransporte
+        if (destination != null)
         {
-            destinationPortal.portalObjects.Add(collision.gameObject);
+            // 1. Mover al jugador
+            // NOTA: Si el jugador tiene Rigidbody2D y se mueve muy rápido, 
+            // a veces es necesario resetear su velocidad aquí.
+            collision.transform.position = destination.position;
+
+            // 2. Bloquear retorno inmediato en el destino
+            // Intentamos obtener el script del portal de destino para avisarle que el jugador acaba de llegar.
+            if (destination.TryGetComponent(out PortalScript destinationPortal))
+            {
+                destinationPortal.RegisterArrivingObject(collision.gameObject);
+            }
+
+            // 3. Feedback Audio
+            PlaySound(teleportSound);
         }
-
-        // Mueve al jugador
-        collision.transform.position = destination.position;
-
-        // Sonido al teletransportarse ("Whoosh") - Este suena INMEDIATAMENTE
-        PlaySound(teleportSound);
+        else
+        {
+            Debug.LogWarning($"Portal {name}: No tiene destino asignado.");
+        }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        portalObjects.Remove(collision.gameObject);
+        // Al salir del collider, eliminamos al objeto de la lista de bloqueo.
+        // Ahora es libre de volver a usar este portal si entra de nuevo.
+        if (portalObjects.Contains(collision.gameObject))
+        {
+            portalObjects.Remove(collision.gameObject);
+        }
     }
 
+    /// <summary>
+    /// Cambia el estado del portal (Activado/Desactivado).
+    /// </summary>
     public void SetActive(bool active)
     {
-        // Solo actualiza si el estado cambia de verdad
-        if (isActive == active) return;
+        if (isActive == active) return; // Evita cálculos si el estado es el mismo
 
         isActive = active;
         UpdatePortalSprite();
 
-        // Lógica del sonido de activación con RETRASO
+        // Gestión de la Corrutina de Audio
+        if (openSoundCoroutine != null) StopCoroutine(openSoundCoroutine);
+
         if (isActive)
         {
-            // Iniciamos la cuenta atrás para que no se pise con el clic del botón
-            StartCoroutine(PlayOpenSoundDelayed());
+            openSoundCoroutine = StartCoroutine(PlayOpenSoundDelayed());
         }
     }
 
-    // <--- NUEVO: La rutina que espera antes de sonar
+    /// <summary>
+    /// Método público para que OTROS portales registren que un objeto ha llegado aquí.
+    /// </summary>
+    public void RegisterArrivingObject(GameObject obj)
+    {
+        if (!portalObjects.Contains(obj))
+        {
+            portalObjects.Add(obj);
+        }
+    }
+
     private IEnumerator PlayOpenSoundDelayed()
     {
-        // 1. Espera el tiempo configurado
+        // Esperamos el tiempo definido para evitar saturación auditiva con el switch
         yield return new WaitForSeconds(soundDelay);
 
-        // 2. Verifica si sigue activo y reproduce
         if (isActive)
         {
             PlaySound(openSound);
@@ -85,16 +132,12 @@ public class PortalScript : MonoBehaviour
 
     private void UpdatePortalSprite()
     {
-        if (spriteRenderer == null) return;
-        spriteRenderer.sprite = isActive ? activeSprite : inactiveSprite;
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.sprite = isActive ? activeSprite : inactiveSprite;
+        }
     }
 
-    public bool IsActive()
-    {
-        return isActive;
-    }
-
-    // Método auxiliar para reproducir sonidos con seguridad
     private void PlaySound(AudioClip clip)
     {
         if (audioSource != null && clip != null)
@@ -102,4 +145,7 @@ public class PortalScript : MonoBehaviour
             audioSource.PlayOneShot(clip);
         }
     }
+
+    // Getter público para consultar estado desde otros scripts
+    public bool IsActive => isActive;
 }

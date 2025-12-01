@@ -1,59 +1,88 @@
 using UnityEngine;
 
-[RequireComponent(typeof(AudioSource))] // <--- NUEVO: Asegura que tenga AudioSource
+/// <summary>
+/// Controla la lógica de un interruptor interactivo. 
+/// Gestiona el estado visual, feedback de audio y la comunicación con una puerta objetivo.
+/// </summary>
+[RequireComponent(typeof(AudioSource))]
 public class Switch_Door : MonoBehaviour
 {
     [Header("Referencias")]
+    // TODO: Optimización - Cambiar 'GameObject' por 'Door_Controller' directamente para evitar GetComponent en runtime.
+    [Tooltip("Referencia al objeto puerta. Debe contener el script Door_Controller.")]
     [SerializeField] private GameObject door;
+
+    [Tooltip("Renderizador del switch. Se obtendrá automáticamente si se deja vacío.")]
     [SerializeField] private SpriteRenderer spriteRenderer;
 
-    [Header("Sprites del switch")]
+    [Header("Configuración Visual")]
     [SerializeField] private Sprite spriteOff;
     [SerializeField] private Sprite spriteOn;
 
-    [Header("Audio")] // <--- NUEVO
-    [SerializeField] private AudioClip switchSound; // El sonido "Clack" al activarse
+    [Header("Configuración de Audio")]
+    [Tooltip("Clip de sonido al activar el switch.")]
+    [SerializeField] private AudioClip switchSound;
 
-    [Header("Estado inicial")]
+    [Header("Estado")]
+    [Tooltip("Indica si el switch ya ha sido accionado. Evita múltiples activaciones.")]
     [SerializeField] private bool isActive = false;
 
-    private AudioSource audioSource; // <--- NUEVO
+    private AudioSource audioSource;
 
     private void Start()
     {
-        // Si no se asignó SpriteRenderer, intenta tomarlo del mismo objeto
+        // Validación de dependencias visuales
         if (spriteRenderer == null)
+        {
             spriteRenderer = GetComponent<SpriteRenderer>();
+            if (spriteRenderer == null) Debug.LogWarning($"{name}: Falta SpriteRenderer.");
+        }
 
-        // <--- NUEVO: Obtenemos el componente de audio
         audioSource = GetComponent<AudioSource>();
 
-        // Establece el sprite inicial
+        // Inicialización de estado visual
         UpdateSprite();
     }
 
+    /// <summary>
+    /// Intenta activar el switch. Contiene lógica de "One-Shot" (solo funciona una vez).
+    /// </summary>
     public void Activate()
     {
-        // Solo se activa si no estaba activo antes
-        if (!isActive)
+        // Guard clause: Si ya está activo, no hacemos nada.
+        if (isActive) return;
+
+        isActive = true;
+        Debug.Log($"Switch activado: {name}");
+
+        // Feedback visual y auditivo
+        UpdateSprite();
+        PlayActivationSound();
+
+        // Lógica de interacción externa
+        TriggerDoorAction();
+    }
+
+    private void PlayActivationSound()
+    {
+        if (switchSound != null && audioSource != null)
         {
-            isActive = true;
-            Debug.Log("Switch activado por bala!");
+            audioSource.PlayOneShot(switchSound);
+        }
+    }
 
-            UpdateSprite(); // Cambia el sprite a 'activado'
-
-            // <--- NUEVO: Reproducir sonido
-            if (audioSource != null && switchSound != null)
+    private void TriggerDoorAction()
+    {
+        // TODO: Mantenimiento - Considerar usar UnityEvents para desacoplar este script de Door_Controller.
+        if (door != null)
+        {
+            if (door.TryGetComponent<Door_Controller>(out var doorScript))
             {
-                audioSource.PlayOneShot(switchSound);
+                doorScript.OpenDoor();
             }
-
-            // Si hay una puerta asignada, intenta abrirla
-            if (door != null)
+            else
             {
-                Door_Controller doorScript = door.GetComponent<Door_Controller>();
-                if (doorScript != null)
-                    doorScript.OpenDoor();
+                Debug.LogError($"{name}: El objeto asignado en 'door' no tiene el componente Door_Controller.");
             }
         }
     }

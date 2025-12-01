@@ -2,84 +2,113 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
+/// <summary>
+/// Controlador de personaje 2D "Refinado".
+/// Implementa físicas avanzadas como Coyote Time, suavizado de movimiento y eventos de aterrizaje.
+/// </summary>
 [RequireComponent(typeof(Rigidbody2D), typeof(SpriteRenderer), typeof(Animator))]
 public class Player_Movement_Refined : MonoBehaviour
 {
-    [Header("Movimiento")]
+    [Header("Física y Movimiento")]
+    [Tooltip("Velocidad máxima horizontal.")]
     [SerializeField] private float speed = 5f;
     [SerializeField] private float jumpForce = 8f;
-    [Range(0f, 0.3f)][SerializeField] private float movementSmoothing = 0.05f;
+
+    [Tooltip("Tiempo que tarda en alcanzar la velocidad máxima. 0 = instantáneo, >0 = sensación de inercia/hielo.")]
+    [Range(0f, 0.3f)]
+    [SerializeField] private float movementSmoothing = 0.05f;
+
+    [Tooltip("Permite mover al personaje mientras está en el aire.")]
     [SerializeField] private bool airControl = true;
 
-    [Header("Detección de suelo")]
+    [Header("Sensores de Entorno")]
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private float groundCheckRadius = 0.2f;
 
-    [Header("Estabilidad de salto")]
-    [SerializeField] private float coyoteTime = 0.1f;   // margen tras dejar el suelo
-    [SerializeField] private float groundBuffer = 0.05f; // tolerancia al aterrizar
+    [Header("Assist (Game Feel)")]
+    [Tooltip("Tiempo extra para saltar después de caer de una plataforma (mejora la jugabilidad).")]
+    [SerializeField] private float coyoteTime = 0.1f;
 
-    [Header("Eventos")]
-    public UnityEvent OnLandEvent; // Invocado al aterrizar
+    [Tooltip("Umbral de velocidad vertical para considerar que se ha aterrizado establemente.")]
+    [SerializeField] private float groundBuffer = 0.05f;
 
+    [Header("Eventos Externos")]
+    [Tooltip("Invoca efectos (sonido, partículas) al tocar el suelo.")]
+    public UnityEvent OnLandEvent;
+
+    // Referencias internas
     private Rigidbody2D rb;
-    private SpriteRenderer sprite;
+    private SpriteRenderer spriteRenderer; // Renombrado para claridad
     private Animator animator;
 
-    // Input System
+    // Referencias de Input
     private InputAction moveAction;
     private InputAction jumpAction;
 
-    // Estado interno
-    private float moveInput;
+    // Estado del Controlador
+    private float horizontalInput;
     private bool isGrounded;
-    private bool wasGrounded;
-    private float lastGroundedTime;
+    private bool wasGrounded;         // Para detectar el flanco de bajada (Landing)
+    private float lastGroundedTime;   // Timestamp para calcular Coyote Time
     private bool facingRight = true;
-    private Vector3 velocity = Vector3.zero;
+
+    // Variable auxiliar para el cálculo de SmoothDamp
+    private Vector3 velocitySmoothing = Vector3.zero;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        sprite = GetComponent<SpriteRenderer>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
 
+        // Inicialización defensiva del evento para evitar NullReferenceException
         if (OnLandEvent == null)
             OnLandEvent = new UnityEvent();
     }
 
     private void OnEnable()
     {
-        // Vincular acciones de Input System
-        moveAction = InputSystem.actions.FindAction("Move");
-        jumpAction = InputSystem.actions.FindAction("Jump");
+        // TODO: Mantenimiento - Buscar acciones por string ("Move") es frágil. 
+        // Si cambias el nombre en el Input Action Asset, esto dejará de funcionar silenciosamente.
+        // Se recomienda usar referencias directas (InputActionReference) en el inspector.
+        var actionMap = InputSystem.actions;
+        if (actionMap != null)
+        {
+            moveAction = actionMap.FindAction("Move");
+            jumpAction = actionMap.FindAction("Jump");
+        }
     }
 
     private void Update()
     {
-        // Leer entrada de movimiento horizontal
-        moveInput = moveAction.ReadValue<Vector2>().x;
+        // 1. Lectura de Inputs (Siempre en Update para respuesta instantánea)
+        if (moveAction != null)
+            horizontalInput = moveAction.ReadValue<Vector2>().x;
 
-        // Comprobar si está en el suelo
+        // 2. Lógica de Sensores
         bool groundNow = CheckGround();
 
-        // Actualizar tiempo del último contacto con suelo
         if (groundNow)
             lastGroundedTime = Time.time;
 
-        // Permitir un pequeño margen (coyote time)
+        // Lógica de Coyote Time:
+        // Es "Grounded" si estamos tocando el suelo AHORA o si lo tocamos hace muy poco tiempo.
         isGrounded = groundNow || (Time.time - lastGroundedTime <= coyoteTime);
 
-        // Animaciones básicas
-        animator.SetBool("isWalking", Mathf.Abs(moveInput) > 0.05f);
+        // 3. Gestión de Animaciones
+        animator.SetBool("isWalking", Mathf.Abs(horizontalInput) > 0.05f);
         animator.SetBool("isGrounded", groundNow);
 
-        // Saltar
-        if (jumpAction.WasPressedThisFrame() && isGrounded)
+        // 4. Lógica de Salto
+        // Usamos isGrounded (que incluye CoyoteTime) para permitir el salto
+        if (jumpAction != null && jumpAction.WasPressedThisFrame() && isGrounded)
+        {
             Jump();
+        }
 
-        // Evento de aterrizaje (solo si recién tocó suelo estable)
+        // 5. Detección de Aterrizaje
+        // Si antes NO estaba en el suelo, y AHORA sí, y no estoy saliendo disparado hacia arriba...
         if (!wasGrounded && groundNow && Mathf.Abs(rb.linearVelocity.y) < groundBuffer)
         {
             OnLandEvent.Invoke();
@@ -91,60 +120,73 @@ public class Player_Movement_Refined : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Move(moveInput);
-
-        // Voltear el sprite según dirección
-        if (moveInput > 0 && !facingRight)
-            Flip();
-        else if (moveInput < 0 && facingRight)
-            Flip();
+        // La física siempre va en FixedUpdate para ser determinista
+        ApplyMovement(horizontalInput);
+        HandleFlipping();
     }
 
-    // ---- Lógica de movimiento principal (suavizado tipo CharacterController2D) ----
-    private void Move(float move)
+    private void ApplyMovement(float move)
     {
+        // Solo movemos si estamos en el suelo O si se permite control aéreo
         if (isGrounded || airControl)
         {
-            // Calcula la velocidad objetivo
+            // Calculamos la velocidad deseada
             Vector3 targetVelocity = new Vector2(move * speed, rb.linearVelocity.y);
 
-            // Aplica suavizado (SmoothDamp)
-            rb.linearVelocity = Vector3.SmoothDamp(rb.linearVelocity, targetVelocity, ref velocity, movementSmoothing);
+            // Vector3.SmoothDamp:
+            // Interpola suavemente desde la velocidad actual hacia la deseada.
+            // Esto elimina el movimiento "robótico" instantáneo y añade peso al personaje.
+            // NOTA: 'linearVelocity' es exclusivo de Unity 6. Usar 'velocity' en versiones anteriores.
+            rb.linearVelocity = Vector3.SmoothDamp(rb.linearVelocity, targetVelocity, ref velocitySmoothing, movementSmoothing);
         }
     }
 
-    // ---- Salto ----
     private void Jump()
     {
-        // Reiniciar velocidad vertical y aplicar impulso
+        // Resetear la velocidad Y es CRÍTICO para saltos consistentes.
+        // Si no lo haces, saltar mientras caes anula parte de la fuerza del salto.
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
+
+        // ForceMode2D.Impulse es ideal para fuerzas instantáneas (explosiones, saltos)
         rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
 
-        animator.ResetTrigger("Land");
+        // Feedback visual inmediato
+        animator.ResetTrigger("Land"); // Evita bugs visuales si saltas justo al aterrizar
         animator.SetTrigger("Jump");
+
+        // Hack: Reseteamos lastGroundedTime para evitar saltos infinitos dentro del tiempo de Coyote
+        lastGroundedTime = -10f;
+        isGrounded = false;
     }
 
-    // ---- Detección de suelo (OverlapCircle) ----
+    private void HandleFlipping()
+    {
+        // Invertimos la escala solo si la dirección del input es opuesta a la dirección actual
+        if ((horizontalInput > 0 && !facingRight) || (horizontalInput < 0 && facingRight))
+        {
+            facingRight = !facingRight;
+
+            // Invertimos el LocalScale en X.
+            // Nota: Esto invierte también a los hijos (puntos de disparo, detectores).
+            // Si esto causa problemas, usar spriteRenderer.flipX en su lugar.
+            Vector3 localScale = transform.localScale;
+            localScale.x *= -1;
+            transform.localScale = localScale;
+        }
+    }
+
     private bool CheckGround()
     {
-        Collider2D hit = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
-        return hit != null;
+        // OverlapCircle es más eficiente y permisivo que Raycast para plataformas 2D
+        return Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
     }
 
-    // ---- Cambiar dirección ----
-    private void Flip()
-    {
-        facingRight = !facingRight;
-        Vector3 scale = transform.localScale;
-        scale.x *= -1;
-        transform.localScale = scale;
-    }
-
-    // ---- Debug visual del GroundCheck ----
     private void OnDrawGizmosSelected()
     {
-        if (groundCheck == null) return;
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
+        if (groundCheck != null)
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
+        }
     }
 }
