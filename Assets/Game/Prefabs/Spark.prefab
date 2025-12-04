@@ -185,6 +185,9 @@ MonoBehaviour:
   duration: 5
   speed: 15
   moveRight: 1
+  whatIsObstacle:
+    serializedVersion: 2
+    m_Bits: 8
   animator: {fileID: 0}
 --- !u!95 &4420530881698279187
 Animator:

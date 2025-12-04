@@ -24,7 +24,7 @@ public class Player_Movement : MonoBehaviour
     [SerializeField] private float stepRate = 0.35f;
 
     private Rigidbody2D rb;
-    private SpriteRenderer sprite;
+    private SpriteRenderer sprite; // Ya no lo usamos para girar, pero lo mantengo por si acaso
     private Animator animator;
     private AudioSource audioSource;
 
@@ -36,9 +36,12 @@ public class Player_Movement : MonoBehaviour
     private bool wasGrounded;
     private float lastGroundedTime;
 
+    // Estado de dirección (Asumimos que el dibujo original mira a la derecha)
+    private bool facingRight = true;
+
     // Variables para control de audio
     private float nextStepTime;
-    private float lastLandTime; // <--- NUEVO: Para evitar repetición del sonido
+    private float lastLandTime;
 
     private void Awake()
     {
@@ -65,16 +68,12 @@ public class Player_Movement : MonoBehaviour
 
         isGrounded = groundCheckNow || (Time.time - lastGroundedTime <= coyoteTime);
 
-        // --- CORRECCIÓN SONIDO ATERRIZAJE ---
-        // Condición 1: Antes estaba en el aire (!wasGrounded) y ahora en suelo (groundCheckNow)
-        // Condición 2: Estaba cayendo con fuerza (rb.linearVelocity.y < -0.1f). Evita sonidos al caminar cuestas.
-        // Condición 3: Han pasado al menos 0.2s desde el último sonido (Time.time > lastLandTime + 0.2f)
+        // --- SONIDO ATERRIZAJE ---
         if (!wasGrounded && groundCheckNow && rb.linearVelocity.y < -0.5f && Time.time > lastLandTime + 0.2f)
         {
             PlaySound(landSound, 0.7f);
-            lastLandTime = Time.time; // Guardamos el momento del sonido
+            lastLandTime = Time.time;
         }
-        // ------------------------------------
 
         // Lógica de pasos (Caminar)
         if (isGrounded && Mathf.Abs(moveInput) > 0.05f && Time.time >= nextStepTime)
@@ -97,8 +96,27 @@ public class Player_Movement : MonoBehaviour
     {
         rb.linearVelocity = new Vector2(moveInput * speed, rb.linearVelocity.y);
 
-        if (Mathf.Abs(moveInput) > 0.05f)
-            sprite.flipX = moveInput < 0;
+        // --- CORRECCIÓN DE GIRO ---
+        // En lugar de flipX, llamamos a la función que voltea el Transform completo
+        if (moveInput > 0 && !facingRight)
+        {
+            Flip();
+        }
+        else if (moveInput < 0 && facingRight)
+        {
+            Flip();
+        }
+    }
+
+    // Esta función voltea al padre y a TODOS sus hijos (DropPoint, GrabZone, etc.)
+    private void Flip()
+    {
+        facingRight = !facingRight;
+
+        // Multiplicamos la escala X por -1
+        Vector3 currentScale = transform.localScale;
+        currentScale.x *= -1;
+        transform.localScale = currentScale;
     }
 
     private void Jump()

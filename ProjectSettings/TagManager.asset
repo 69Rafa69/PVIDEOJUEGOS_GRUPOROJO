@@ -12,6 +12,7 @@ TagManager:
   - Spark
   - EnemyGrab
   - Switch
+  - Button
   layers:
   - Default
   - TransparentFX

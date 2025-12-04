@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 6504783668187740175}
   m_Layer: 0
   m_Name: Boton
-  m_TagString: Untagged
+  m_TagString: Button
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -441,6 +441,7 @@ MonoBehaviour:
   inactiveSprite: {fileID: -4209461767521648114, guid: 4117f1bb03a2acd48aeb6230598e43d8, type: 3}
   openSound: {fileID: 8300000, guid: 0257547604a3836418aa002451e07f49, type: 3}
   teleportSound: {fileID: 0}
+  soundDelay: 0.2
 --- !u!82 &8469522610181882163
 AudioSource:
   m_ObjectHideFlags: 0
@@ -692,6 +693,7 @@ MonoBehaviour:
   inactiveSprite: {fileID: -4209461767521648114, guid: 4117f1bb03a2acd48aeb6230598e43d8, type: 3}
   openSound: {fileID: 8300000, guid: 0257547604a3836418aa002451e07f49, type: 3}
   teleportSound: {fileID: 0}
+  soundDelay: 0.2
 --- !u!82 &5357312905464644466
 AudioSource:
   m_ObjectHideFlags: 0
